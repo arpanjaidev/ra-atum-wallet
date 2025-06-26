@@ -32,9 +32,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <WagmiProvider config={wagmiConfig}>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<App />} />
-            <Route path="/wallet" element={<WalletPage />} />
-          </Routes>
+  <Route path="/" element={<WalletPage />} />
+  {/* Optionally, keep your original App page on another route: */}
+  <Route path="/app" element={<App />} />
+</Routes>
+
         </BrowserRouter>
       </WagmiProvider>
     </QueryClientProvider>
