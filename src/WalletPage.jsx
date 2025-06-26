@@ -1,5 +1,5 @@
 // src/WalletPage.jsx
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount, useReadContract } from "wagmi";
 import { formatUnits } from "viem";
@@ -26,22 +26,14 @@ export default function WalletPage() {
   const { address, isConnected } = useAccount();
 
   // --- Real Token Balance ---
-  // Fetch decimals (needed to format balance)
-  const {
-    data: decimals,
-    isLoading: decimalsLoading,
-  } = useReadContract({
+  const { data: decimals, isLoading: decimalsLoading } = useReadContract({
     address: tokenAddress,
     abi: tokenABI,
     functionName: "decimals",
-    chainId: 56 // 1 for Ethereum mainnet, 56 for BSC
+    chainId: 56
   });
 
-  // Fetch token balance
-  const {
-    data: rawBalance,
-    isLoading: balanceLoading,
-  } = useReadContract({
+  const { data: rawBalance, isLoading: balanceLoading } = useReadContract({
     address: tokenAddress,
     abi: tokenABI,
     functionName: "balanceOf",
@@ -49,7 +41,6 @@ export default function WalletPage() {
     chainId: 56
   });
 
-  // Format balance
   let tokenBalance = "–";
   if (isConnected) {
     if (balanceLoading || decimalsLoading) tokenBalance = "Fetching...";
@@ -116,7 +107,11 @@ export default function WalletPage() {
   }, [calcValue]);
 
   return (
-    <div style={{background:"#0e1018",minHeight:"100vh",color:"#fff",fontFamily:"'Share Tech Mono', monospace",margin:0,padding:0}}>
+    <div style={{
+      background:"#0e1018", minHeight:"100vh", color:"#fff",
+      fontFamily:"'Share Tech Mono', monospace", margin:0, padding:0,
+      width: "100vw", boxSizing: "border-box"
+    }}>
       <div
         className="wallet-headline"
         style={{
@@ -139,7 +134,7 @@ export default function WalletPage() {
       />
       <div className="wallet-full-row" style={{
         display: "flex", alignItems: "flex-start", justifyContent: "center", gap: 44,
-        padding: "16px 0 0 0", maxWidth: 1250, margin: "0 auto 48px auto", flexWrap: "nowrap"
+        padding: "16px 0 0 0", maxWidth: 1250, margin: "0 auto 48px auto", flexWrap: "wrap"
       }}>
         <img src="/RA-ATUM-LOGO.png" alt="RA Atum Logo" className="ra-logo-big" style={{
           width: 170, height: 170, maxWidth: "35vw", borderRadius: 35, objectFit: "contain",
@@ -285,10 +280,11 @@ export default function WalletPage() {
           <div className="calc-footer-space" style={{minHeight:38}}></div>
         </div>
       </div>
+      {/* Bottom Back to Home Button */}
       <div className="bottom-back-home" style={{
         margin: "0 auto 32px auto", textAlign: "center", width: "100%", display: "flex", justifyContent: "center"
       }}>
-        <a href="/" className="calc-footer-link" style={{
+        <a href="https://ra-atum-website.vercel.app/" className="calc-footer-link" style={{
           color: "#00b4fa", marginTop: 28, display: "inline-block", fontSize: "1.07em",
           borderRadius: 7, padding: "12px 36px", background: "#23243b", textDecoration: "none",
           transition: "background 0.14s, color 0.14s", fontFamily: "'Share Tech Mono', monospace",
@@ -297,6 +293,30 @@ export default function WalletPage() {
           <i className="fas fa-arrow-left"></i> Back to Home
         </a>
       </div>
+      {/* Responsive tweaks */}
+      <style>{`
+        @media (max-width: 1100px) {
+          .wallet-full-row { gap: 22px !important; }
+          .ra-logo-big { width: 115px !important; height: 115px !important;}
+        }
+        @media (max-width: 900px) {
+          .wallet-full-row { gap: 6vw !important;}
+          .ra-logo-big { width: 95px !important; height: 95px !important;}
+          .wallet-container { max-width: 320px !important;}
+          .wallet-calc-container { max-width: 290px !important;}
+        }
+        @media (max-width: 800px) {
+          .wallet-full-row { flex-direction: column !important; align-items: center !important; gap: 18px !important;}
+          .ra-logo-big { margin: 0 auto 14px auto !important; }
+          .wallet-container { align-items: center !important; width: 98vw !important; max-width: 340px !important;}
+        }
+        @media (max-width: 480px) {
+          .wallet-container { padding: 12px 3vw 12px 3vw !important;}
+          .wallet-title { font-size: 1rem !important;}
+          .ra-logo-big { width: 80px !important; height: 80px !important;}
+          .wallet-calc-container { padding: 11px 2vw 10px 2vw !important; }
+        }
+      `}</style>
     </div>
   );
 }
