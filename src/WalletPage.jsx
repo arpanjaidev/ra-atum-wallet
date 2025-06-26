@@ -1,4 +1,3 @@
-// src/WalletPage.jsx
 import React, { useEffect, useState } from "react";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount, useReadContract } from "wagmi";
@@ -7,25 +6,26 @@ import { formatUnits } from "viem";
 const tokenAddress = "0xcE06aDbB070c2f0d90Ba109E77c0c2Ff83F9Ff3A";
 const tokenABI = [
   {
-    "inputs": [{"internalType":"address","name":"owner","type":"address"}],
-    "name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-    "stateMutability":"view","type":"function"
+    "inputs": [{ "internalType": "address", "name": "owner", "type": "address" }],
+    "name": "balanceOf",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],
     "name": "decimals",
-    "outputs": [{"internalType":"uint8","name":"","type":"uint8"}],
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
     "stateMutability": "view",
     "type": "function"
   }
 ];
 
 export default function WalletPage() {
-  // Web3Modal & Wagmi hooks
   const { open } = useWeb3Modal();
   const { address, isConnected } = useAccount();
 
-  // --- Real Token Balance ---
+  // Read contract: decimals
   const { data: decimals, isLoading: decimalsLoading } = useReadContract({
     address: tokenAddress,
     abi: tokenABI,
@@ -33,6 +33,7 @@ export default function WalletPage() {
     chainId: 56
   });
 
+  // Read contract: token balance
   const { data: rawBalance, isLoading: balanceLoading } = useReadContract({
     address: tokenAddress,
     abi: tokenABI,
@@ -48,36 +49,23 @@ export default function WalletPage() {
       tokenBalance = parseFloat(formatUnits(rawBalance, decimals)).toLocaleString(undefined, { maximumFractionDigits: 4 });
     else tokenBalance = "0";
   }
-
-  // Referral (demo)
   const referralEarnings = isConnected ? "0.00" : "–";
 
-  // Typing effect
+  // Typing headline
   const [walletHeadline, setWalletHeadline] = useState("");
-  const walletTypingText = "Join RA Atum to shape the future of blockchain-powered kindness.";
-
+  const walletTypingText = "JOIN RA ATUM TO SHAPE THE FUTURE OF BLOCKCHAIN-POWERED KINDNESS.";
   useEffect(() => {
     let wIndex = 0, wTypingForward = true, wBlinkOn = true, stopped = false;
     function typeWalletLine() {
       if (stopped) return;
-      let html = walletTypingText.substring(0, wIndex) + `<span style="color:#00b4fa;font-weight:bold;font-size:1.15em;">${wBlinkOn ? "|" : "&nbsp;"}</span>`;
+      let html = walletTypingText.substring(0, wIndex) + `<span style="color:#00b4fa;font-weight:bold;font-size:1.2em;">${wBlinkOn ? "|" : "&nbsp;"}</span>`;
       setWalletHeadline(html);
       if (wTypingForward) {
-        if (wIndex <= walletTypingText.length) {
-          wIndex++;
-          setTimeout(typeWalletLine, 37);
-        } else {
-          wTypingForward = false;
-          setTimeout(typeWalletLine, 1300);
-        }
+        if (wIndex <= walletTypingText.length) { wIndex++; setTimeout(typeWalletLine, 27); }
+        else { wTypingForward = false; setTimeout(typeWalletLine, 1400); }
       } else {
-        if (wIndex >= 0) {
-          wIndex--;
-          setTimeout(typeWalletLine, 16);
-        } else {
-          wTypingForward = true;
-          setTimeout(typeWalletLine, 750);
-        }
+        if (wIndex >= 0) { wIndex--; setTimeout(typeWalletLine, 14); }
+        else { wTypingForward = true; setTimeout(typeWalletLine, 800); }
       }
     }
     let blinkInt = setInterval(() => { wBlinkOn = !wBlinkOn; }, 410);
@@ -106,19 +94,32 @@ export default function WalletPage() {
     setLaunchBnb((calcValue * launchPrice.bnb).toFixed(5));
   }, [calcValue]);
 
+  // Responsive, no white border, full screen
   return (
-    <div style={{
-      background:"#0e1018", minHeight:"100vh", color:"#fff",
-      fontFamily:"'Share Tech Mono', monospace", margin:0, padding:0,
-      width: "100vw", boxSizing: "border-box"
-    }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        minWidth: "100vw",
+        width: "100vw",
+        background: "#0e1018",
+        color: "#fff",
+        fontFamily: "'Share Tech Mono', monospace",
+        margin: 0,
+        padding: 0,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-start",
+      }}
+    >
+      {/* Headline */}
       <div
         className="wallet-headline"
         style={{
           textAlign: "center",
-          marginTop: 38,
-          marginBottom: 35,
-          fontSize: "1.18em",
+          marginTop: "3vw",
+          marginBottom: "2vw",
+          fontSize: "min(2.5vw, 2.1em)",
           fontWeight: "bold",
           textTransform: "uppercase",
           background: "linear-gradient(90deg,#fff 8%,#00b4fa 60%,#23e6ff 98%)",
@@ -126,72 +127,143 @@ export default function WalletPage() {
           WebkitTextFillColor: "transparent",
           backgroundClip: "text",
           textShadow: "0 2px 18px #22213866,0 0 8px #00b4fa88,0 0 18px #00b4fa99",
-          filter: "brightness(1.15) drop-shadow(0 0 3px #00e6ff99)",
-          letterSpacing: "1.1px",
-          minHeight: "1.7em"
+          filter: "brightness(1.18) drop-shadow(0 0 7px #00e6ff99)",
+          letterSpacing: "1.2px",
+          minHeight: "1.9em",
+          width: "100vw",
+          overflow: "hidden",
+          userSelect: "none",
         }}
-        dangerouslySetInnerHTML={{__html: walletHeadline}}
+        dangerouslySetInnerHTML={{ __html: walletHeadline }}
       />
-      <div className="wallet-full-row" style={{
-        display: "flex", alignItems: "flex-start", justifyContent: "center", gap: 44,
-        padding: "16px 0 0 0", maxWidth: 1250, margin: "0 auto 48px auto", flexWrap: "wrap"
-      }}>
-        <img src="/RA-ATUM-LOGO.png" alt="RA Atum Logo" className="ra-logo-big" style={{
-          width: 170, height: 170, maxWidth: "35vw", borderRadius: 35, objectFit: "contain",
-          background: "#191b2a", boxShadow: "0 8px 48px #00b4fa88, 0 0 0 7px #191a2477",
-          border: "3px solid #00b4fa44", marginTop: 8, marginLeft: 8, display: "block",
-          transition: "transform .22s"
-        }} />
-        <div className="wallet-container" style={{
-          background: "#181a1b", borderRadius: 18, boxShadow: "0 8px 32px #00b4fa33",
-          width: 320, minWidth: 230, margin: 0, padding: "30px 22px 24px 22px",
-          border: "2.5px solid #00b4fa", position: "relative", zIndex: 2,
-          fontFamily: "'Share Tech Mono', monospace", display: "flex",
-          flexDirection: "column", alignItems: "center"
+
+      {/* Wallet Section Grid */}
+      <div
+        className="wallet-full-row"
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "center",
+          gap: "2vw",
+          width: "100vw",
+          maxWidth: "1200px",
+          padding: "2vw 1vw 0 1vw",
+          margin: "0 auto 4vw auto",
+          flexWrap: "wrap",
+        }}
+      >
+        {/* Logo */}
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "center",
+          minWidth: 180, minHeight: 180, width: "21vw", height: "21vw", maxWidth: 210, maxHeight: 210,
+          borderRadius: "35px", background: "#15162a", boxShadow: "0 8px 52px #00b4fa50, 0 0 0 7px #191a2455",
+          border: "3px solid #00b4fa33", margin: "0 1vw 1vw 0"
         }}>
-          <div className="wallet-title" style={{
-            fontSize: "1.33rem", letterSpacing: "1.4px", fontWeight: "bold",
-            marginBottom: 16, background: "linear-gradient(90deg, #fff 8%, #00b4fa 60%, #23e6ff 98%)",
-            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-            textShadow: "0 2px 18px #22213866, 0 0 8px #00b4fa88, 0 0 18px #00b4fa99",
-            filter: "brightness(1.16) drop-shadow(0 0 3px #00e6ff99)",
-            textTransform: "uppercase", textAlign: "center", width: "100%"
-          }}>
-            <i className="fas fa-wallet"></i> Wallet Overview
+          <img
+            src="/RA-ATUM-LOGO.png"
+            alt="RA Atum Logo"
+            style={{
+              width: "85%", height: "85%",
+              objectFit: "contain", borderRadius: "33px",
+              background: "transparent"
+            }}
+          />
+        </div>
+        {/* Wallet Card */}
+        <div
+          className="wallet-container"
+          style={{
+            background: "#181a1b",
+            borderRadius: 18,
+            boxShadow: "0 8px 32px #00b4fa33",
+            width: "min(350px, 80vw)",
+            margin: "0 0.5vw",
+            padding: "32px 22px 26px 22px",
+            border: "2.5px solid #00b4fa",
+            position: "relative",
+            zIndex: 2,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            minWidth: 220,
+          }}
+        >
+          <div
+            className="wallet-title"
+            style={{
+              fontSize: "1.27rem",
+              letterSpacing: "1.4px",
+              fontWeight: "bold",
+              marginBottom: 18,
+              background: "linear-gradient(90deg, #fff 8%, #00b4fa 60%, #23e6ff 98%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              textShadow: "0 2px 18px #22213866, 0 0 8px #00b4fa88, 0 0 18px #00b4fa99",
+              filter: "brightness(1.16) drop-shadow(0 0 3px #00e6ff99)",
+              textTransform: "uppercase",
+              textAlign: "center",
+              width: "100%",
+            }}
+          >
+            <i className="fas fa-wallet"></i> WALLET OVERVIEW
           </div>
-          {/* Connect Wallet Button */}
+          {/* Connect Button */}
           <button
             style={{
-              padding: "16px 34px",
+              padding: "18px 37px",
               background: "linear-gradient(90deg, #0fffc7, #00c3ff)",
               color: "#11131a",
               border: "none",
               borderRadius: "50px",
-              fontSize: "1.2rem",
+              fontSize: "1.16rem",
               cursor: "pointer",
-              marginBottom: 30,
-              fontWeight: "bold"
+              marginBottom: 18,
+              fontWeight: "bold",
+              boxShadow: "0 2px 14px #00b4fa66",
+              width: "100%",
+              maxWidth: 240,
+              outline: "none",
+              letterSpacing: ".6px",
+              transition: "background .17s, color .17s, transform .12s"
             }}
             onClick={open}
           >
             {isConnected ? "Connected" : "Connect Wallet"}
           </button>
-          <div id="wallet-address" className="wallet-address" style={{
-            margin: "8px 0 17px 0", fontSize: "0.98rem", color: "#00b4fa",
-            wordBreak: "break-all", letterSpacing: "0.6px", minHeight: 20,
-            background: "#23243b", borderRadius: 7, padding: "6px 10px",
-            fontWeight: "bold", display: "inline-block", boxShadow: "0 2px 16px #00b4fa33",
-            border: "1.5px solid #00b4fa44", fontFamily: "'Share Tech Mono', monospace",
-            textAlign: "center", width: "100%", alignSelf: "center"
-          }}>
+          {/* Address */}
+          <div
+            id="wallet-address"
+            className="wallet-address"
+            style={{
+              margin: "8px 0 17px 0",
+              fontSize: "1.01rem",
+              color: "#00b4fa",
+              wordBreak: "break-all",
+              letterSpacing: "0.6px",
+              minHeight: 20,
+              background: "#23243b",
+              borderRadius: 7,
+              padding: "6px 10px",
+              fontWeight: "bold",
+              display: "inline-block",
+              boxShadow: "0 2px 16px #00b4fa33",
+              border: "1.5px solid #00b4fa44",
+              textAlign: "center",
+              width: "100%",
+              alignSelf: "center",
+              marginBottom: 10,
+              fontFamily: "inherit"
+            }}
+          >
             {isConnected && address
               ? `Address: ${address.slice(0, 7)}...${address.slice(-4)}`
               : "Not connected"}
           </div>
+          {/* Token Balance */}
           <div className="wallet-info-row" style={{
             display: "flex", justifyContent: "space-between", width: "100%", margin: "13px 0",
-            fontSize: "1.04rem", fontWeight: "bold", color: "#e7d7b6", borderBottom: "1px solid #202f38",
+            fontSize: "1.08rem", fontWeight: "bold", color: "#e7d7b6", borderBottom: "1px solid #202f38",
             paddingBottom: 5
           }}>
             <span>Token Balance</span>
@@ -199,39 +271,70 @@ export default function WalletPage() {
               {tokenBalance === "–" ? "–" : `${tokenBalance} RA Atum`}
             </span>
           </div>
+          {/* Referral */}
           <div className="wallet-info-row" style={{
             display: "flex", justifyContent: "space-between", width: "100%", margin: "13px 0",
-            fontSize: "1.04rem", fontWeight: "bold", color: "#e7d7b6", borderBottom: "1px solid #202f38",
+            fontSize: "1.08rem", fontWeight: "bold", color: "#e7d7b6", borderBottom: "1px solid #202f38",
             paddingBottom: 5
           }}>
             <span>Referral Earnings</span>
             <span id="referral-earnings">{referralEarnings}</span>
           </div>
         </div>
-        <div className="wallet-calc-container" style={{
-          maxWidth: 400, background: "#181a1b", borderRadius: 18, boxShadow: "0 8px 32px #00b4fa33",
-          border: "2.5px solid #00b4fa", margin: 0, padding: "28px 20px 22px 20px",
-          fontFamily: "'Share Tech Mono', monospace", color: "#fff", textAlign: "center",
-          zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center",
-          minWidth: 270
-        }}>
+        {/* Calculator */}
+        <div
+          className="wallet-calc-container"
+          style={{
+            maxWidth: 400,
+            background: "#181a1b",
+            borderRadius: 18,
+            boxShadow: "0 8px 32px #00b4fa33",
+            border: "2.5px solid #00b4fa",
+            margin: 0,
+            padding: "32px 20px 22px 20px",
+            color: "#fff",
+            textAlign: "center",
+            zIndex: 2,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            minWidth: 220,
+            width: "min(350px, 80vw)",
+          }}
+        >
           <div className="calc-title-shine" style={{
-            fontSize: "1.13em", fontWeight: "bold", textTransform: "uppercase",
+            fontSize: "1.17em",
+            fontWeight: "bold",
+            textTransform: "uppercase",
             background: "linear-gradient(90deg, #fff 8%, #00b4fa 60%, #23e6ff 98%)",
-            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
             textShadow: "0 2px 18px #22213866,0 0 8px #00b4fa88,0 0 18px #00b4fa99",
             filter: "brightness(1.15) drop-shadow(0 0 3px #00e6ff99)",
-            letterSpacing: "1.1px", marginBottom: 16
+            letterSpacing: "1.1px",
+            marginBottom: 18
           }}>
             CALCULATE THIS PROFIT
           </div>
           <div className="calc-row" style={{
-            display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 18
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 10,
+            marginBottom: 20,
+            width: "100%"
           }}>
             <label htmlFor="calc-ra" style={{
-              color: "#00b4fa", fontSize: "1em", fontWeight: "bold", letterSpacing: ".3px",
-              minWidth: 70, textAlign: "right"
-            }}>Enter RA ATUM</label>
+              color: "#00b4fa",
+              fontSize: "1em",
+              fontWeight: "bold",
+              letterSpacing: ".3px",
+              minWidth: 84,
+              textAlign: "right"
+            }}>
+              Enter RA ATUM
+            </label>
             <input
               id="calc-ra"
               className="calc-input"
@@ -241,9 +344,16 @@ export default function WalletPage() {
               value={calcValue}
               onChange={e => setCalcValue(Number(e.target.value))}
               style={{
-                borderRadius: 6, border: "1.5px solid #00b4fa77", background: "#222941",
-                color: "#fff", padding: "8px 14px", fontSize: "1em", fontFamily: "'Share Tech Mono', monospace",
-                width: 120, marginLeft: 8, outline: "none"
+                borderRadius: 6,
+                border: "1.5px solid #00b4fa77",
+                background: "#222941",
+                color: "#fff",
+                padding: "8px 14px",
+                fontSize: "1em",
+                fontFamily: "inherit",
+                width: 120,
+                marginLeft: 8,
+                outline: "none"
               }}
             />
           </div>
@@ -273,48 +383,58 @@ export default function WalletPage() {
               </tr>
             </tbody>
           </table>
-          <div style={{fontSize:"0.98em",color:"#bda76a",marginTop:12,letterSpacing:".2px"}}>
+          <div style={{ fontSize: "0.98em", color: "#bda76a", marginTop: 12, letterSpacing: ".2px" }}>
             Starting: ₹0.55 | $0.01 | BNB 0.00001<br />
             Launch: ₹15 | $0.17 | BNB 0.0003
           </div>
-          <div className="calc-footer-space" style={{minHeight:38}}></div>
+          <div className="calc-footer-space" style={{ minHeight: 38 }}></div>
         </div>
       </div>
-      {/* Bottom Back to Home Button */}
+
+      {/* Bottom back to home button */}
       <div className="bottom-back-home" style={{
-        margin: "0 auto 32px auto", textAlign: "center", width: "100%", display: "flex", justifyContent: "center"
+        margin: "0 auto 32px auto",
+        textAlign: "center",
+        width: "100vw",
+        display: "flex",
+        justifyContent: "center"
       }}>
-        <a href="https://ra-atum-website.vercel.app/" className="calc-footer-link" style={{
-          color: "#00b4fa", marginTop: 28, display: "inline-block", fontSize: "1.07em",
-          borderRadius: 7, padding: "12px 36px", background: "#23243b", textDecoration: "none",
-          transition: "background 0.14s, color 0.14s", fontFamily: "'Share Tech Mono', monospace",
-          border: "1.5px solid #00b4fa44", fontWeight: "bold", boxShadow: "0 2px 10px #00b4fa22"
-        }}>
+        <a
+          href="https://ra-atum-website.vercel.app/"
+          className="calc-footer-link"
+          style={{
+            color: "#00b4fa",
+            marginTop: 18,
+            display: "inline-block",
+            fontSize: "1.11em",
+            borderRadius: 7,
+            padding: "12px 36px",
+            background: "#23243b",
+            textDecoration: "none",
+            transition: "background 0.14s, color 0.14s",
+            fontFamily: "'Share Tech Mono', monospace",
+            border: "1.5px solid #00b4fa44",
+            fontWeight: "bold",
+            boxShadow: "0 2px 10px #00b4fa22"
+          }}
+        >
           <i className="fas fa-arrow-left"></i> Back to Home
         </a>
       </div>
-      {/* Responsive tweaks */}
+      {/* Responsive CSS */}
       <style>{`
-        @media (max-width: 1100px) {
-          .wallet-full-row { gap: 22px !important; }
-          .ra-logo-big { width: 115px !important; height: 115px !important;}
-        }
         @media (max-width: 900px) {
-          .wallet-full-row { gap: 6vw !important;}
-          .ra-logo-big { width: 95px !important; height: 95px !important;}
-          .wallet-container { max-width: 320px !important;}
-          .wallet-calc-container { max-width: 290px !important;}
+          .wallet-full-row {
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 24px !important;
+          }
         }
-        @media (max-width: 800px) {
-          .wallet-full-row { flex-direction: column !important; align-items: center !important; gap: 18px !important;}
-          .ra-logo-big { margin: 0 auto 14px auto !important; }
-          .wallet-container { align-items: center !important; width: 98vw !important; max-width: 340px !important;}
-        }
-        @media (max-width: 480px) {
-          .wallet-container { padding: 12px 3vw 12px 3vw !important;}
-          .wallet-title { font-size: 1rem !important;}
-          .ra-logo-big { width: 80px !important; height: 80px !important;}
-          .wallet-calc-container { padding: 11px 2vw 10px 2vw !important; }
+        @media (max-width: 540px) {
+          .wallet-headline { font-size: 1.13em !important; }
+          .wallet-container, .wallet-calc-container { width: 98vw !important; max-width: 340px !important; }
+          .wallet-title { font-size: 1em !important; }
+          .ra-logo-big { width: 80px !important; height: 80px !important; }
         }
       `}</style>
     </div>
