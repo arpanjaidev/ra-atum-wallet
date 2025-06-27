@@ -7,7 +7,6 @@ import { mainnet, bsc } from 'wagmi/chains';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from './App.jsx';
 import WalletPage from './WalletPage.jsx';
-import PreSalePage from './PreSalePage.jsx';
 
 const projectId = '12d853ddc01d124d1788bce412bd3020';
 
@@ -33,11 +32,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <WagmiProvider config={wagmiConfig}>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<WalletPage />} />
-            <Route path="/presale" element={<PreSalePage />} />
-            {/* Optionally, keep your original App page on another route: */}
-            <Route path="/app" element={<App />} />
-          </Routes>
+  <Route path="/" element={<WalletPage />} />
+  {/* Optionally, keep your original App page on another route: */}
+  <Route path="/app" element={<App />} />
+</Routes>
 
         </BrowserRouter>
       </WagmiProvider>
