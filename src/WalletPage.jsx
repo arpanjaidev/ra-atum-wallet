@@ -263,6 +263,7 @@ export default function WalletPage() {
             >
               <i className="fas fa-wallet"></i> WALLET OVERVIEW
             </div>
+            {/* Connect Wallet Button */}
             <button
               style={{
                 padding: "16px 34px",
@@ -279,6 +280,25 @@ export default function WalletPage() {
               onClick={open}
             >
               {isConnected ? "Connected" : "Connect Wallet"}
+            </button>
+            {/* Buy RA Atum Token Button */}
+            <button
+              style={{
+                padding: "13px 30px",
+                background: "linear-gradient(90deg, #ffd200, #00ffc6)",
+                color: "#11131a",
+                border: "none",
+                borderRadius: "50px",
+                fontSize: "1.14rem",
+                cursor: "pointer",
+                fontWeight: "bold",
+                marginBottom: "16px",
+                marginTop: "5px",
+                width: "100%"
+              }}
+              onClick={() => window.location.href = "/presale"}
+            >
+              <i className="fa-solid fa-bolt"></i> Buy RA Atum Token
             </button>
             <div
               id="wallet-address"
