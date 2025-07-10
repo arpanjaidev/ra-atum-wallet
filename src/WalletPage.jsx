@@ -426,13 +426,13 @@ export default function WalletPage() {
                 Enter RA ATUM
               </label>
               <input
-                id="calc-ra"
-                className="calc-input"
-                type="number"
-                min="0"
-                placeholder="100"
-                value={calcValue}
-                onChange={(e) => setCalcValue(Number(e.target.value))}
+  id="calc-ra"
+  className="calc-input"
+  type="number"
+  min="0"
+  placeholder="100"
+  value={calcValue === 0 ? "" : calcValue.toString().replace(/^0+/, "")}
+  onChange={(e) => setCalcValue(Number(e.target.value))}
                 style={{
                   borderRadius: 6,
                   border: "1.5px solid #00b4fa77",
