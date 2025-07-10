@@ -4,6 +4,7 @@ import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount, useReadContract } from "wagmi";
 import { formatUnits } from "viem";
 
+
 // Token setup
 const tokenAddress = "0xcE06aDbB070c2f0d90Ba109E77c0c2Ff83F9Ff3A";
 const tokenABI = [
@@ -23,7 +24,10 @@ const tokenABI = [
   },
 ];
 
-export default function WalletPage() {
+export default function WalletPage() { 
+  const [mounted, setMounted] = useState(false);
+useEffect(() => { setMounted(true); }, []);
+
   // Web3Modal & Wagmi hooks
   const { open } = useWeb3Modal();
   const { address, isConnected } = useAccount();
@@ -264,6 +268,7 @@ export default function WalletPage() {
               <i className="fas fa-wallet"></i> WALLET OVERVIEW
             </div>
             {/* Connect Wallet Button */}
+            {mounted && (
             <button
               style={{
                 padding: "16px 34px",
