@@ -32,6 +32,8 @@ export default function WalletPage() {
   }, []);
 
   if (!mounted) return null; // Wait for mount before rendering anything
+  return <div style={{color:'red'}}>WalletPage is mounting!</div>
+
 
   // Web3Modal & Wagmi hooks
   const { open } = useWeb3Modal();
