@@ -309,351 +309,360 @@ export default function PresalePage() {
         </a>
       </div>
       {/* --- Mobile-Perfect Responsive Styles --- */}
-      <style>{`
-        html, body, #root {
-          margin: 0 !important;
-          padding: 0 !important;
-          width: 100vw !important;
-          min-height: 100vh !important;
-          overflow-x: hidden !important;
-          background: transparent !important;
-        }
-        .presale-bg {
-          min-height: 100vh;
-          min-width: 100vw;
-          background: radial-gradient(ellipse 120vw 120vh at 55vw 5vh, #091b29 70%, #071626 100%);
-          padding: 0;
-          margin: 0;
-          overflow-x: hidden;
-          box-sizing: border-box;
-          position: relative;
-        }
-        .presale-logo {
-          position: absolute;
-          top: 20px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 110px;
-          height: 110px;
-          border-radius: 33px;
-          background: #181d2f;
-          box-shadow: 0 0 30px #00e6ff99, 0 0 0 14px #00183325;
-          border: 2.5px solid #00e6ff88;
-          z-index: 20;
-          padding: 10px;
-          animation: blinklogo 1.15s step-end infinite alternate;
-        }
-        .presale-timer-wrap {
-          width: 100vw;
-          margin: 0;
-          padding-top: 150px;
-          text-align: center;
-          font-family: 'Share Tech Mono', monospace;
-        }
-        .presale-timer {
-          font-size: 1.55em;
-          font-weight: 800;
-          color: #00e6ff;
-          letter-spacing: .6px;
-          text-shadow: 0 0 18px #00e6ffcc, 0 2px 14px #fff;
-          filter: drop-shadow(0 0 22px #00e6ffcc);
-          display: inline-block;
-          padding: 8px 16px;
-          border-radius: 13px;
-          background: rgba(8,32,60,0.60);
-          animation: blink 1s steps(1,end) infinite alternate;
-          border: 2px solid #00e6ff77;
-          margin: 0 auto;
-          min-width: 180px;
-        }
-        .presale-main-wrap {
-          width: 100vw;
-          min-height: calc(100vh - 120px);
-          margin: 0;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: flex-start;
-        }
-        .presale-headline {
-          max-width: 99vw;
-          width: 99vw;
-          margin: 0 auto;
-          padding-top: 8px;
-          padding-bottom: 7px;
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-        .presale-title {
-          font-size: 1.35em;
-          font-weight: 900;
-          margin-bottom: 7px;
-          margin-top: 0;
-          letter-spacing: 1.3px;
-          text-align: center;
-          color: #00e6ff;
-          filter: brightness(1.05) drop-shadow(0 0 13px #00e6ff66);
-          text-shadow: 0 2px 16px #00e6ff55;
-          text-transform: uppercase;
-          animation: blink 1.1s step-end infinite alternate;
-        }
-        .presale-links {
-          display: flex;
-          gap: 6px;
-          margin-bottom: 11px;
-          flex-wrap: wrap;
-          justify-content: center;
-          align-items: center;
-          width: 99vw;
-        }
-        .presale-link {
-          background: linear-gradient(90deg, #1a2939 80%, #00e6ff1a 100%);
-          color: #00e6ff;
-          font-weight: bold;
-          padding: 7px 10px;
-          border-radius: 8px;
-          box-shadow: 0 2px 7px #00e6ff12;
-          text-decoration: none;
-          font-size: .99em;
-          border: 1px solid #00e6ff40;
-          letter-spacing: .13px;
-          transition: background .15s;
-          white-space: nowrap;
-          filter: drop-shadow(0 0 4px #00e6ff66);
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          position: relative;
-          user-select: all;
-        }
-        .copy-addr {
-          cursor: pointer;
-        }
-        .presale-copied {
-          position: absolute;
-          top: -27px;
-          right: 5px;
-          color: #00e6ff;
-          background: #031925;
-          padding: 2px 8px;
-          border-radius: 6px;
-          font-weight: 700;
-          font-size: 0.89em;
-          box-shadow: 0 0 6px #00e6ff66;
-          animation: blink 1.2s step-end infinite alternate;
-          z-index: 100;
-        }
-        .presale-infopills {
-          display: flex;
-          gap: 7px;
-          margin-bottom: 10px;
-          flex-wrap: wrap;
-          align-items: center;
-          justify-content: center;
-        }
-        .presale-card-section {
-          width: 99vw;
-          min-height: 42vh;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding-bottom: 14px;
-        }
-        .presale-img-anim {
-          width: 100%;
-          min-height: 90px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 11px;
-          margin-top: 7px;
-          pointer-events: none;
-          user-select: none;
-          position: relative;
-          transition: all .65s cubic-bezier(.45,1.08,.5,1.2);
-        }
-        .presale-img {
-          max-width: 170px;
-          border-radius: 15px;
-          box-shadow: 0 4px 13px #00e6ff45, 0 0 0 5px #00e6ff0c;
-          display: block;
-        }
-        .presale-card {
-          background: linear-gradient(115deg, #0c182b 86%, #00e6ff11 100%);
-          border: 2px solid #00e6ff77;
-          border-radius: 13px;
-          box-shadow: 0 8px 16px #00e6ff15, 0 0 0 2px #00e6ff22;
-          max-width: 99vw;
-          width: 95vw;
-          padding: 19px 7px 13px 7px;
-          margin: 0 auto 0 auto;
-          margin-bottom: 12px;
-          z-index: 1;
-          text-align: center;
-          color: #e4f8ff;
-          position: relative;
-        }
-        .presale-card-header {
-          font-weight: bold;
-          font-size: 1.07em;
-          color: #00e6ff;
-          margin-bottom: 8px;
-          text-shadow: 0 2px 9px #00e6ff44;
-          letter-spacing: .6px;
-          text-transform: uppercase;
-          animation: blink 1s steps(1,end) infinite alternate;
-        }
-        .presale-bnbbal {
-          margin: 0 0 9px 0;
-          font-size: .95em;
-          color: #00e6ff;
-          font-family: 'Share Tech Mono', monospace;
-        }
-        .presale-buy-wrap {
-          margin: 0 auto 5px auto;
-          padding: 10px 0 0 0;
-        }
-        .presale-buy-title {
-          font-weight: bold;
-          color: #00e6ff;
-          font-size: .98em;
-          margin-bottom: 5px;
-          letter-spacing: .03em;
-        }
-        .presale-buy-minmax {
-          font-weight: bold;
-          color: #00e6ff;
-          font-size: 0.92em;
-          margin-bottom: 6px;
-        }
-        .presale-buy-input-wrap {
-          display: flex;
-          align-items: center;
-          margin-bottom: 7px;
-          gap: 4px;
-          justify-content: center;
-        }
-        .presale-input {
-          border-radius: 6px;
-          border: 1.5px solid #00e6ff80;
-          padding: 9px 10px;
-          font-weight: bold;
-          width: 90px;
-          color: #fff;
-          background: #17253e;
-          font-family: 'Share Tech Mono', monospace;
-          font-size: 1em;
-          margin-right: 3px;
-        }
-        .presale-input-unit {
-          font-weight: 700;
-          color: #00e6ff;
-          font-size: 1em;
-        }
-        .presale-raamount {
-          font-size: .91em;
-          margin-bottom: 6px;
-          color: #00e6ff;
-          font-weight: bold;
-          letter-spacing: .5px;
-          min-height: 1.1em;
-        }
-        .presale-btn {
-          background: linear-gradient(90deg,#00e6ff 0%,#00b4fa 100%);
-          color: #fff;
-          font-weight: bold;
-          padding: 10px 14px;
-          border-radius: 13px;
-          border: none;
-          font-size: 1.04em;
-          cursor: pointer;
-          margin-bottom: 8px;
-          margin-top: 4px;
-          opacity: 1;
-          box-shadow: 0 2px 9px #00e6ff11;
-          letter-spacing: .6px;
-          outline: none;
-          transition: .14s;
-          width: 95vw;
-          max-width: 320px;
-          text-shadow: 0 0 7px #00e6ff, 0 0 10px #fff;
-        }
-        .presale-btn:disabled {
-          opacity: 0.57;
-          cursor: not-allowed;
-        }
-        .presale-error {
-          color: #d72a2a;
-          margin-top: 6px;
-          font-weight: bold;
-        }
-        .presale-success {
-          color: #00e6ff;
-          margin-top: 6px;
-          font-weight: bold;
-        }
-        .presale-supply-row {
-          font-size: .98em;
-          color: #00e6ff;
-          font-weight: bold;
-          margin-top: 12px;
-          text-shadow: 0 2px 7px #00e6ff25;
-          letter-spacing: 1.1px;
-        }
-        .presale-bottom-link {
-          margin: 20px auto 0 auto;
-          text-align: center;
-          width: 100vw;
-          display: flex;
-          justify-content: center;
-        }
-        .calc-footer-link {
-          color: #00e6ff;
-          margin-top: 14px;
-          margin-bottom: 11px;
-          display: inline-block;
-          font-size: 1em;
-          border-radius: 8px;
-          padding: 10px 20px;
-          background: #18273a;
-          text-decoration: none;
-          font-weight: bold;
-          box-shadow: 0 2px 5px #00e6ff12;
-          border: 1.5px solid #00e6ff29;
-          letter-spacing: .13px;
-          transition: background 0.14s, color 0.14s;
-          text-shadow: 0 0 8px #00e6ff;
-        }
+<style>{`
+  html, body, #root {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100vw !important;
+    min-height: 100vh !important;
+    overflow-x: hidden !important;
+    background: transparent !important;
+  }
+  .presale-bg {
+    min-height: 100vh;
+    min-width: 100vw;
+    background: radial-gradient(ellipse 120vw 120vh at 55vw 5vh, #091b29 70%, #071626 100%);
+    padding: 0;
+    margin: 0;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    position: relative;
+  }
+  .presale-logo {
+    position: absolute;
+    top: 34px;
+    left: 44px;
+    width: 130px;
+    height: 130px;
+    border-radius: 36px;
+    background: #181d2f;
+    box-shadow: 0 0 30px #00e6ff99, 0 0 0 14px #00183325;
+    border: 2.5px solid #00e6ff88;
+    z-index: 20;
+    padding: 10px;
+    animation: blinklogo 1.15s step-end infinite alternate;
+  }
+  .presale-timer-wrap {
+    width: 100vw;
+    margin: 0;
+    padding-top: 50px;
+    padding-bottom: 11px;
+    text-align: center;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .presale-timer {
+    font-size: 2.4em;
+    font-weight: 800;
+    color: #00e6ff;
+    letter-spacing: .6px;
+    text-shadow: 0 0 18px #00e6ffcc, 0 2px 14px #fff;
+    filter: drop-shadow(0 0 22px #00e6ffcc);
+    display: inline-block;
+    padding: 10px 44px;
+    border-radius: 20px;
+    background: rgba(8,32,60,0.60);
+    animation: blink 1s steps(1,end) infinite alternate;
+    border: 2px solid #00e6ff77;
+    margin: 0 auto;
+    min-width: 350px;
+  }
+  .presale-main-wrap {
+    width: 100vw;
+    min-height: calc(100vh - 120px);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .presale-headline {
+    max-width: 1240px;
+    width: 99vw;
+    margin: 0 auto;
+    padding-top: 6px;
+    padding-bottom: 12px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .presale-title {
+    font-size: 2.35em;
+    font-weight: 900;
+    margin-bottom: 11px;
+    margin-top: 0;
+    letter-spacing: 2px;
+    text-align: center;
+    color: #00e6ff;
+    filter: brightness(1.05) drop-shadow(0 0 13px #00e6ff66);
+    text-shadow: 0 2px 16px #00e6ff55;
+    text-transform: uppercase;
+    animation: blink 1.1s step-end infinite alternate;
+    letter-spacing: 1.7px;
+  }
+  .presale-links {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  .presale-link {
+    background: linear-gradient(90deg, #1a2939 80%, #00e6ff1a 100%);
+    color: #00e6ff;
+    font-weight: bold;
+    padding: 8px 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px #00e6ff33;
+    text-decoration: none;
+    font-size: 1.01em;
+    border: 1.1px solid #00e6ff55;
+    letter-spacing: .15px;
+    transition: background .15s;
+    white-space: nowrap;
+    filter: drop-shadow(0 0 4px #00e6ff66);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    position: relative;
+    user-select: all;
+    text-shadow: 0 0 7px #00e6ff44;
+  }
+  .copy-addr {
+    cursor: pointer;
+  }
+  .presale-copied {
+    position: absolute;
+    top: -29px;
+    right: 7px;
+    color: #00e6ff;
+    background: #031925;
+    padding: 3px 12px;
+    border-radius: 7px;
+    font-weight: 700;
+    font-size: 0.94em;
+    box-shadow: 0 0 6px #00e6ff66;
+    animation: blink 1.2s step-end infinite alternate;
+    z-index: 100;
+  }
+  .presale-infopills {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 19px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+  }
+  .presale-card-section {
+    width: 100vw;
+    min-height: 62vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 18px;
+  }
+  .presale-img-anim {
+    width: 100%;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    margin-top: 8px;
+    pointer-events: none;
+    user-select: none;
+    position: relative;
+    transition: all .65s cubic-bezier(.45,1.08,.5,1.2);
+  }
+  .presale-img {
+    max-width: 235px;
+    border-radius: 18px;
+    box-shadow: 0 4px 18px #00e6ff45, 0 0 0 7px #00e6ff0c;
+    display: block;
+    position: relative;
+    z-index: 4;
+  }
+  .presale-card {
+    background: linear-gradient(115deg, #0c182b 86%, #00e6ff11 100%);
+    border: 2px solid #00e6ff77;
+    border-radius: 18px;
+    box-shadow: 0 8px 16px #00e6ff15, 0 0 0 4px #00e6ff22;
+    max-width: 440px;
+    width: 99vw;
+    padding: 27px 22px 16px 22px;
+    margin: 0 auto 0 auto;
+    margin-top: 0vw;
+    margin-bottom: 18px;
+    z-index: 1;
+    text-align: center;
+    color: #e4f8ff;
+    position: relative;
+  }
+  .presale-card-header {
+    font-weight: bold;
+    font-size: 1.13em;
+    color: #00e6ff;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 12px #00e6ff44;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    animation: blink 1s steps(1,end) infinite alternate;
+  }
+  .presale-bnbbal {
+    margin: 0 0 13px 0;
+    font-size: .97em;
+    color: #00e6ff;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .presale-buy-wrap {
+    margin: 0 auto 8px auto;
+    padding: 13px 0 0 0;
+  }
+  .presale-buy-title {
+    font-weight: bold;
+    color: #00e6ff;
+    font-size: .95em;
+    margin-bottom: 7px;
+    letter-spacing: .03em;
+  }
+  .presale-buy-minmax {
+    font-weight: bold;
+    color: #00e6ff;
+    font-size: 0.93em;
+    margin-bottom: 7px;
+  }
+  .presale-buy-input-wrap {
+    display: flex;
+    align-items: center;
+    margin-bottom: 11px;
+    gap: 6px;
+    justify-content: center;
+  }
+  .presale-input {
+    border-radius: 7px;
+    border: 1.6px solid #00e6ff80;
+    padding: 11px 13px;
+    font-weight: bold;
+    width: 120px;
+    color: #fff;
+    background: #17253e;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.03em;
+    margin-right: 5px;
+  }
+  .presale-input-unit {
+    font-weight: 700;
+    color: #00e6ff;
+  }
+  .presale-raamount {
+    font-size: .91em;
+    margin-bottom: 8px;
+    color: #00e6ff;
+    font-weight: bold;
+    letter-spacing: .5px;
+    min-height: 1.1em;
+  }
+  .presale-btn {
+    background: linear-gradient(90deg,#00e6ff 0%,#00b4fa 100%);
+    color: #fff;
+    font-weight: bold;
+    padding: 12px 28px;
+    border-radius: 17px;
+    border: none;
+    font-size: 1.11em;
+    cursor: pointer;
+    margin-bottom: 8px;
+    margin-top: 6px;
+    opacity: 1;
+    box-shadow: 0 2px 14px #00e6ff11;
+    letter-spacing: .6px;
+    outline: none;
+    transition: .14s;
+    text-shadow: 0 0 8px #00e6ff, 0 0 10px #fff;
+  }
+  .presale-btn:disabled {
+    opacity: 0.62;
+    cursor: not-allowed;
+  }
+  .presale-error {
+    color: #d72a2a;
+    margin-top: 6px;
+    font-weight: bold;
+  }
+  .presale-success {
+    color: #00e6ff;
+    margin-top: 6px;
+    font-weight: bold;
+  }
+  .presale-supply-row {
+    font-size: 1.01em;
+    color: #00e6ff;
+    font-weight: bold;
+    margin-top: 14px;
+    text-shadow: 0 2px 11px #00e6ff25;
+    letter-spacing: 1.1px;
+  }
+  .presale-bottom-link {
+    margin: 36px auto 0 auto;
+    text-align: center;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+  }
+  .calc-footer-link {
+    color: #00e6ff;
+    margin-top: 17px;
+    margin-bottom: 19px;
+    display: inline-block;
+    font-size: 1.11em;
+    border-radius: 10px;
+    padding: 12px 38px;
+    background: #18273a;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 2px 7px #00e6ff12;
+    border: 1.5px solid #00e6ff29;
+    letter-spacing: .13px;
+    transition: background 0.14s, color 0.14s;
+    text-shadow: 0 0 8px #00e6ff;
+  }
+  @media (max-width: 950px) {
+    .presale-headline { max-width: 99vw; }
+    .presale-card { max-width: 99vw; }
+    .presale-links { gap: 10px; }
+  }
+  @media (max-width: 700px) {
+    .presale-logo { width: 90px; height: 90px; left: 50%; top: 20px; transform: translateX(-50%); }
+    .presale-timer-wrap { padding-top: 110px; }
+    .presale-title { font-size: 1.22em; }
+    .presale-timer { font-size: 1.12em; min-width:120px; padding:7px 9px; }
+    .presale-card { max-width: 98vw; padding: 14px 8px 10px 8px;}
+    .presale-img { max-width: 98vw; }
+    .presale-links { width: 99vw; }
+  }
+  @media (max-width: 480px) {
+    .presale-bg, .presale-main-wrap, .presale-headline, .presale-card, .presale-card-section {
+      width: 100vw !important; max-width: 100vw !important; min-width: 100vw !important;
+    }
+    .presale-links { width: 100vw; flex-direction: column; gap: 6px; }
+    .presale-img { max-width: 99vw; }
+    .presale-card { padding: 10px 1vw 10px 1vw; }
+    .presale-title { font-size: 1.02em; }
+    .presale-timer { font-size: 1em; min-width: 80px; }
+    .presale-logo { top: 10px; width: 62px; height: 62px; border-radius: 15px; padding: 2px;}
+  }
+  @keyframes blink {
+    0% { filter: brightness(1.14) drop-shadow(0 0 7px #00e6ff77); }
+    100% { filter: brightness(1.29) drop-shadow(0 0 21px #00e6ffcc); }
+  }
+  @keyframes blinklogo {
+    0% { filter: brightness(1.07) drop-shadow(0 0 19px #00e6ffcc);}
+    100% { filter: brightness(1.37) drop-shadow(0 0 37px #00e6ff);}
+  }
+`}</style>
 
-        @media (max-width: 700px) {
-          .presale-logo { width: 90px; height: 90px; padding: 5px; border-radius: 22px;}
-          .presale-timer-wrap { padding-top: 110px; }
-          .presale-title { font-size: 1em; }
-          .presale-timer { font-size: 1.12em; min-width:120px; padding:7px 9px; }
-        }
-        @media (max-width: 480px) {
-          .presale-bg, .presale-main-wrap, .presale-headline, .presale-card, .presale-card-section {
-            width: 100vw !important; max-width: 100vw !important; min-width: 100vw !important;
-          }
-          .presale-links { width: 100vw; }
-          .presale-img { max-width: 95vw; }
-          .presale-card { padding: 12px 3vw 11px 3vw; }
-          .presale-title { font-size: 0.89em; }
-          .presale-timer { font-size: 0.94em; padding: 7px 7px;}
-          .presale-logo { top: 16px; width: 65px; height: 65px; border-radius: 17px;}
-        }
-
-        @keyframes blink {
-          0% { filter: brightness(1.14) drop-shadow(0 0 7px #00e6ff77); }
-          100% { filter: brightness(1.29) drop-shadow(0 0 21px #00e6ffcc); }
-        }
-        @keyframes blinklogo {
-          0% { filter: brightness(1.07) drop-shadow(0 0 19px #00e6ffcc);}
-          100% { filter: brightness(1.37) drop-shadow(0 0 37px #00e6ff);}
-        }
-      `}</style>
     </div>
   );
 }
