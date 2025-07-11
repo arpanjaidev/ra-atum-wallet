@@ -50,7 +50,7 @@ export default function PresalePage() {
     return `${d}d ${h}h ${m}m ${s}s left`;
   }
 
-  // Timer state (blinks, updates every second)
+  // Timer state
   const [timerStr, setTimerStr] = useState(formatTimer(time));
   useEffect(() => {
     const id = setInterval(() => {
@@ -142,408 +142,101 @@ export default function PresalePage() {
     }
   }, [isTxSuccess]);
 
-  // Fill 100vw/100vh, less highlight/digital blue, logo blinks!
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        minWidth: "100vw",
-        width: "100vw",
-        height: "100vh",
-        background: "radial-gradient(ellipse 120vw 120vh at 55vw 5vh, #091b29 70%, #071626 100%)",
-        padding: 0,
-        margin: 0,
-        overflow: "auto",
-        position: "fixed",
-        top: 0,
-        left: 0,
-        zIndex: 1,
-        boxSizing: "border-box",
-      }}
-    >
+    <div className="presale-bg">
       {/* --- Blinking LOGO --- */}
       <img
         src="/RA-ATUM-LOGO.png"
         alt="RA Atum Logo"
-        style={{
-          position: "absolute",
-          top: 34,
-          left: 44,
-          width: 130,
-          height: 130,
-          borderRadius: 36,
-          background: "#181d2f",
-          boxShadow: "0 0 30px #00e6ff99, 0 0 0 14px #00183325",
-          border: "2.5px solid #00e6ff88",
-          zIndex: 20,
-          padding: 10,
-          animation: "blinklogo 1.15s step-end infinite alternate",
-        }}
+        className="presale-logo"
       />
       {/* --- LIVE Timer Top --- */}
-      <div
-        style={{
-          width: "100vw",
-          margin: 0,
-          paddingTop: 50,
-          paddingBottom: 11,
-          textAlign: "center",
-          fontFamily: "'Share Tech Mono', monospace",
-        }}
-      >
-        <div
-          style={{
-            fontSize: "2.4em",
-            fontWeight: 800,
-            color: "#00e6ff",
-            letterSpacing: ".6px",
-            textShadow: "0 0 18px #00e6ffcc, 0 2px 14px #fff",
-            filter: "drop-shadow(0 0 22px #00e6ffcc)",
-            display: "inline-block",
-            padding: "10px 44px",
-            borderRadius: "20px",
-            background: "rgba(8,32,60,0.60)",
-            animation: "blink 1s steps(1,end) infinite alternate",
-            border: "2px solid #00e6ff77",
-            margin: "0 auto",
-            minWidth: 350,
-          }}
-        >
+      <div className="presale-timer-wrap">
+        <div className="presale-timer">
           LIVE • {timerStr}
         </div>
       </div>
       {/* --- Main Content --- */}
-      <div
-        style={{
-          width: "100vw",
-          minHeight: "calc(100vh - 120px)",
-          margin: 0,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "flex-start",
-        }}
-      >
+      <div className="presale-main-wrap">
         {/* --- HEADLINE SECTION --- */}
-        <div
-          style={{
-            maxWidth: 1240,
-            width: "99vw",
-            margin: "0 auto",
-            paddingTop: 6,
-            paddingBottom: 12,
-            position: "relative",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <div
-            style={{
-              fontSize: "2.35em",
-              fontWeight: 900,
-              marginBottom: 11,
-              marginTop: 0,
-              letterSpacing: 2,
-              textAlign: "center",
-              color: "#00e6ff",
-              filter: "brightness(1.05) drop-shadow(0 0 13px #00e6ff66)",
-              textShadow: "0 2px 16px #00e6ff55",
-              textTransform: "uppercase",
-              animation: "blink 1.1s step-end infinite alternate",
-              letterSpacing: "1.7px",
-            }}
-          >
-            RA ATUM TOKEN PRE-SALE
-          </div>
-          <div
-            style={{
-              display: "flex",
-              gap: 18,
-              marginBottom: 20,
-              flexWrap: "wrap",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-            }}
-          >
-            {/* Contract Link */}
+        <div className="presale-headline">
+          <div className="presale-title">RA ATUM TOKEN PRE-SALE</div>
+          <div className="presale-links">
             <a
               href={bscScanPresale}
               target="_blank"
               rel="noopener noreferrer"
-              style={{
-                background: "linear-gradient(90deg, #1a2939 80%, #00e6ff1a 100%)",
-                color: "#00e6ff",
-                fontWeight: "bold",
-                padding: "8px 15px",
-                borderRadius: 12,
-                boxShadow: "0 2px 10px #00e6ff33",
-                textDecoration: "none",
-                fontSize: "1.01em",
-                border: "1.1px solid #00e6ff55",
-                letterSpacing: ".15px",
-                transition: "background .15s",
-                whiteSpace: "nowrap",
-                filter: "drop-shadow(0 0 4px #00e6ff66)",
-              }}
+              className="presale-link"
               title="View Presale Contract on BscScan"
             >
               <i className="fa-solid fa-link"></i> View Presale on BscScan
             </a>
-
-            {/* Token Address with Copy */}
             <span
-              style={{
-                background: "linear-gradient(90deg,#1a2939 70%,#00e6ff18 100%)",
-                color: "#00e6ff",
-                fontWeight: "bold",
-                padding: "8px 13px 8px 12px",
-                borderRadius: 12,
-                border: "1.1px solid #00e6ff44",
-                boxShadow: "0 2px 10px #00e6ff12",
-                display: "flex",
-                alignItems: "center",
-                gap: 7,
-                cursor: "pointer",
-                position: "relative",
-                userSelect: "all",
-                filter: "drop-shadow(0 0 4px #00e6ff66)",
-                textShadow: "0 0 7px #00e6ff44",
-              }}
+              className="presale-link copy-addr"
               onClick={() => copyToClipboard(tokenAddress, setCopied)}
               title="Copy Token Address"
             >
               Token:&nbsp;
-              <span style={{ color: "#00e6ff", letterSpacing: "1.0px" }}>
-                {tokenAddress.slice(0, 8)}...{tokenAddress.slice(-5)}
-              </span>
+              <span>{tokenAddress.slice(0, 8)}...{tokenAddress.slice(-5)}</span>
               <FaRegCopy style={{ fontSize: 18, opacity: 0.9 }} />
               {copied && (
-                <span
-                  style={{
-                    position: "absolute",
-                    top: -29,
-                    right: 7,
-                    color: "#00e6ff",
-                    background: "#031925",
-                    padding: "3px 12px",
-                    borderRadius: 7,
-                    fontWeight: 700,
-                    fontSize: "0.94em",
-                    boxShadow: "0 0 6px #00e6ff66",
-                    animation: "blink 1.2s step-end infinite alternate",
-                    zIndex: 100,
-                  }}
-                >
-                  Copied!
-                </span>
+                <span className="presale-copied">Copied!</span>
               )}
             </span>
-
-            {/* Token Supply */}
-            <span
-              style={{
-                background: "linear-gradient(87deg, #051a25 50%, #00e6ff0c 100%)",
-                color: "#00e6ff",
-                fontWeight: "bold",
-                padding: "8px 13px 8px 13px",
-                borderRadius: 12,
-                boxShadow: "0 2px 7px #00e6ff17",
-                fontSize: "1.04em",
-                letterSpacing: "1.3px",
-                border: "1.1px solid #00e6ff33",
-                display: "inline-block",
-                filter: "drop-shadow(0 0 3px #00e6ff77)",
-                textShadow: "0 0 6px #00e6ff33",
-              }}
-            >
-              {tokenSupply}
-            </span>
+            <span className="presale-link">{tokenSupply}</span>
           </div>
-          {/* --- Presale Price Info Bar --- */}
-          <div
-            style={{
-              display: "flex",
-              gap: 14,
-              marginBottom: 19,
-              flexWrap: "wrap",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <InfoPill
-              label="Starting"
-              value={`${startPrice.rs} | ${startPrice.usd} | BNB ${startPrice.bnb}`}
-              color="#00e6ff"
-            />
-            <InfoPill
-              label="Launch"
-              value={`${launchPrice.rs} | ${launchPrice.usd} | BNB ${launchPrice.bnb}`}
-              color="#00e6ff"
-            />
+          <div className="presale-infopills">
+            <InfoPill label="Starting" value={`${startPrice.rs} | ${startPrice.usd} | BNB ${startPrice.bnb}`} color="#00e6ff" />
+            <InfoPill label="Launch" value={`${launchPrice.rs} | ${launchPrice.usd} | BNB ${launchPrice.bnb}`} color="#00e6ff" />
           </div>
         </div>
 
         {/* --- MAIN PRESALE CARD SECTION --- */}
-        <div
-          style={{
-            width: "100vw",
-            minHeight: "62vh",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            paddingBottom: 18,
-          }}
-        >
+        <div className="presale-card-section">
           {/* Animated Presale Image */}
           <div
             ref={imageRef}
+            className="presale-img-anim"
             style={{
-              width: "100%",
-              minHeight: 100,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 14,
-              marginTop: 8,
-              pointerEvents: "none",
-              userSelect: "none",
+              right: imgVisible ? 0 : "-80px",
+              opacity: imgVisible ? 1 : 0,
             }}
           >
             <img
               src="https://i.pinimg.com/736x/3c/1d/68/3c1d682a818eef7b2e508a2e591ac649.jpg"
               alt="Presale"
-              style={{
-                maxWidth: 235,
-                borderRadius: 18,
-                boxShadow: "0 4px 18px #00e6ff45, 0 0 0 7px #00e6ff0c",
-                display: "block",
-                position: "relative",
-                right: imgVisible ? 0 : "-80px",
-                opacity: imgVisible ? 1 : 0,
-                transition: "all .65s cubic-bezier(.45,1.08,.5,1.2)",
-                zIndex: 4,
-              }}
+              className="presale-img"
             />
           </div>
           {/* Main neon card */}
-          <div
-            style={{
-              background: "linear-gradient(115deg, #0c182b 86%, #00e6ff11 100%)",
-              border: "2px solid #00e6ff77",
-              borderRadius: 18,
-              boxShadow: "0 8px 16px #00e6ff15, 0 0 0 4px #00e6ff22",
-              maxWidth: 440,
-              width: "99vw",
-              padding: "27px 22px 16px 22px",
-              margin: "0 auto 0 auto",
-              marginTop: "0vw",
-              marginBottom: 18,
-              zIndex: 1,
-              textAlign: "center",
-              color: "#e4f8ff",
-              position: "relative",
-            }}
-          >
-            <div
-              style={{
-                fontWeight: "bold",
-                fontSize: "1.13em",
-                color: "#00e6ff",
-                marginBottom: 10,
-                textShadow: "0 2px 12px #00e6ff44",
-                letterSpacing: ".6px",
-                textTransform: "uppercase",
-                animation: "blink 1s steps(1,end) infinite alternate",
-              }}
-            >
+          <div className="presale-card">
+            <div className="presale-card-header">
               {live ? (
                 <span>
-                  <span style={{ color: "#00e6ff", fontWeight: 900 }}>
-                    LIVE
-                  </span>
-                  <span style={{ color: "#00e6ff" }}>
-                    {" "}
-                    • {timerStr}
-                  </span>
+                  <span style={{ color: "#00e6ff", fontWeight: 900 }}>LIVE</span>
+                  <span style={{ color: "#00e6ff" }}> • {timerStr}</span>
                 </span>
               ) : now < presaleStart ? (
-                <span style={{ color: "#00e6ff" }}>
-                  Starts in: {timerStr}
-                </span>
+                <span style={{ color: "#00e6ff" }}>Starts in: {timerStr}</span>
               ) : (
                 <span style={{ color: "#d72a2a" }}>Presale Ended</span>
               )}
             </div>
-            <div
-              style={{
-                margin: "0 0 13px 0",
-                fontSize: ".97em",
-                color: "#00e6ff",
-                fontFamily: "'Share Tech Mono', monospace",
-              }}
-            >
+            <div className="presale-bnbbal">
               {isConnected ? (
                 <span>
                   <b>Your BNB Balance:</b>{" "}
                   {bnbBal ? Number(bnbBal.formatted).toFixed(5) : "0.00000"}
                 </span>
               ) : (
-                <span style={{ color: "#00e6ff" }}>
-                  Please connect wallet to buy!
-                </span>
+                <span style={{ color: "#00e6ff" }}>Please connect wallet to buy!</span>
               )}
             </div>
-            <div
-              style={{
-                margin: "0 auto 8px auto",
-                padding: "13px 0 0 0",
-              }}
-            >
-              <div
-                style={{
-                  fontWeight: "bold",
-                  color: "#00e6ff",
-                  fontSize: ".95em",
-                  marginBottom: 7,
-                  letterSpacing: ".03em",
-                }}
-              >
-                Buy RA ATUM (Presale)
-              </div>
-              <div
-                style={{
-                  fontWeight: "bold",
-                  color: "#00e6ff",
-                  fontSize: "0.93em",
-                  marginBottom: 7,
-                }}
-              >
-                Min: 0.01 BNB | Max: 2 BNB per wallet
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: 11,
-                  gap: 6,
-                  justifyContent: "center",
-                }}
-              >
+            <div className="presale-buy-wrap">
+              <div className="presale-buy-title">Buy RA ATUM (Presale)</div>
+              <div className="presale-buy-minmax">Min: 0.01 BNB | Max: 2 BNB per wallet</div>
+              <div className="presale-buy-input-wrap">
                 <input
-                  style={{
-                    borderRadius: 7,
-                    border: "1.6px solid #00e6ff80",
-                    padding: "11px 13px",
-                    fontWeight: "bold",
-                    width: 120,
-                    color: "#fff",
-                    background: "#17253e",
-                    fontFamily: "'Share Tech Mono', monospace",
-                    fontSize: "1.03em",
-                    marginRight: 5,
-                  }}
                   type="number"
                   placeholder="Enter BNB"
                   min={minBNB}
@@ -556,48 +249,17 @@ export default function PresalePage() {
                     setBnb(val);
                   }}
                   disabled={!isConnected}
+                  className="presale-input"
                 />
-                <span style={{ fontWeight: 700, color: "#00e6ff" }}>BNB</span>
+                <span className="presale-input-unit">BNB</span>
               </div>
-              <div
-                style={{
-                  fontSize: ".91em",
-                  marginBottom: 8,
-                  color: "#00e6ff",
-                  fontWeight: "bold",
-                  letterSpacing: ".5px",
-                  minHeight: "1.1em",
-                }}
-              >
+              <div className="presale-raamount">
                 {raAtumGet && isConnected ? (
-                  <span>
-                    ≈ <span style={{ color: "#00e6ff" }}>{raAtumGet}</span> RA ATUM
-                  </span>
-                ) : (
-                  ""
-                )}
+                  <span>≈ <span style={{ color: "#00e6ff" }}>{raAtumGet}</span> RA ATUM</span>
+                ) : ("")}
               </div>
-
-              {/* Real buy logic */}
               <button
-                style={{
-                  background: "linear-gradient(90deg,#00e6ff 0%,#00b4fa 100%)",
-                  color: "#fff",
-                  fontWeight: "bold",
-                  padding: "12px 28px",
-                  borderRadius: 17,
-                  border: "none",
-                  fontSize: "1.11em",
-                  cursor: isConnected && !isTxLoading ? "pointer" : "not-allowed",
-                  marginBottom: 8,
-                  marginTop: 6,
-                  opacity: isConnected ? 1 : 0.62,
-                  boxShadow: "0 2px 14px #00e6ff11",
-                  letterSpacing: ".6px",
-                  outline: "none",
-                  transition: ".14s",
-                  textShadow: "0 0 8px #00e6ff, 0 0 10px #fff",
-                }}
+                className="presale-btn"
                 disabled={
                   !isConnected ||
                   isTxLoading ||
@@ -613,14 +275,10 @@ export default function PresalePage() {
                   : "Connect Wallet"}
               </button>
               {buyError && (
-                <div style={{ color: "#d72a2a", marginTop: 6, fontWeight: "bold" }}>
-                  {buyError}
-                </div>
+                <div className="presale-error">{buyError}</div>
               )}
               {buySuccess && (
-                <div style={{ color: "#00e6ff", marginTop: 6, fontWeight: "bold" }}>
-                  {buySuccess}
-                </div>
+                <div className="presale-success">{buySuccess}</div>
               )}
               {isTxSuccess && txData && (
                 <div style={{ marginTop: 8 }}>
@@ -636,64 +294,22 @@ export default function PresalePage() {
               )}
             </div>
           </div>
-          <div
-            style={{
-              fontSize: "1.01em",
-              color: "#00e6ff",
-              fontWeight: "bold",
-              marginTop: 14,
-              textShadow: "0 2px 11px #00e6ff25",
-              letterSpacing: "1.1px",
-            }}
-          >
+          <div className="presale-supply-row">
             21,000,000 Token Supply &nbsp;|&nbsp; Digital Launch &nbsp;|&nbsp; 100% Transparent
           </div>
         </div>
       </div>
       {/* OUTSIDE: Back to Home */}
-      <div
-        style={{
-          margin: "36px auto 0 auto",
-          textAlign: "center",
-          width: "100vw",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
+      <div className="presale-bottom-link">
         <a
           href="/"
           className="calc-footer-link"
-          style={{
-            color: "#00e6ff",
-            marginTop: 17,
-            marginBottom: 19,
-            display: "inline-block",
-            fontSize: "1.11em",
-            borderRadius: 10,
-            padding: "12px 38px",
-            background: "#18273a",
-            textDecoration: "none",
-            fontWeight: "bold",
-            boxShadow: "0 2px 7px #00e6ff12",
-            border: "1.5px solid #00e6ff29",
-            letterSpacing: ".13px",
-            transition: "background 0.14s, color 0.14s",
-            textShadow: "0 0 8px #00e6ff",
-          }}
         >
           <i className="fas fa-arrow-left"></i> Back to Home
         </a>
       </div>
-      {/* Animation Keyframes */}
+      {/* --- Mobile-Perfect Responsive Styles --- */}
       <style>{`
-        @keyframes blink {
-          0% { filter: brightness(1.14) drop-shadow(0 0 7px #00e6ff77); }
-          100% { filter: brightness(1.29) drop-shadow(0 0 21px #00e6ffcc); }
-        }
-        @keyframes blinklogo {
-          0% { filter: brightness(1.07) drop-shadow(0 0 19px #00e6ffcc);}
-          100% { filter: brightness(1.37) drop-shadow(0 0 37px #00e6ff);}
-        }
         html, body, #root {
           margin: 0 !important;
           padding: 0 !important;
@@ -701,6 +317,341 @@ export default function PresalePage() {
           min-height: 100vh !important;
           overflow-x: hidden !important;
           background: transparent !important;
+        }
+        .presale-bg {
+          min-height: 100vh;
+          min-width: 100vw;
+          background: radial-gradient(ellipse 120vw 120vh at 55vw 5vh, #091b29 70%, #071626 100%);
+          padding: 0;
+          margin: 0;
+          overflow-x: hidden;
+          box-sizing: border-box;
+          position: relative;
+        }
+        .presale-logo {
+          position: absolute;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 110px;
+          height: 110px;
+          border-radius: 33px;
+          background: #181d2f;
+          box-shadow: 0 0 30px #00e6ff99, 0 0 0 14px #00183325;
+          border: 2.5px solid #00e6ff88;
+          z-index: 20;
+          padding: 10px;
+          animation: blinklogo 1.15s step-end infinite alternate;
+        }
+        .presale-timer-wrap {
+          width: 100vw;
+          margin: 0;
+          padding-top: 150px;
+          text-align: center;
+          font-family: 'Share Tech Mono', monospace;
+        }
+        .presale-timer {
+          font-size: 1.55em;
+          font-weight: 800;
+          color: #00e6ff;
+          letter-spacing: .6px;
+          text-shadow: 0 0 18px #00e6ffcc, 0 2px 14px #fff;
+          filter: drop-shadow(0 0 22px #00e6ffcc);
+          display: inline-block;
+          padding: 8px 16px;
+          border-radius: 13px;
+          background: rgba(8,32,60,0.60);
+          animation: blink 1s steps(1,end) infinite alternate;
+          border: 2px solid #00e6ff77;
+          margin: 0 auto;
+          min-width: 180px;
+        }
+        .presale-main-wrap {
+          width: 100vw;
+          min-height: calc(100vh - 120px);
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: flex-start;
+        }
+        .presale-headline {
+          max-width: 99vw;
+          width: 99vw;
+          margin: 0 auto;
+          padding-top: 8px;
+          padding-bottom: 7px;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .presale-title {
+          font-size: 1.35em;
+          font-weight: 900;
+          margin-bottom: 7px;
+          margin-top: 0;
+          letter-spacing: 1.3px;
+          text-align: center;
+          color: #00e6ff;
+          filter: brightness(1.05) drop-shadow(0 0 13px #00e6ff66);
+          text-shadow: 0 2px 16px #00e6ff55;
+          text-transform: uppercase;
+          animation: blink 1.1s step-end infinite alternate;
+        }
+        .presale-links {
+          display: flex;
+          gap: 6px;
+          margin-bottom: 11px;
+          flex-wrap: wrap;
+          justify-content: center;
+          align-items: center;
+          width: 99vw;
+        }
+        .presale-link {
+          background: linear-gradient(90deg, #1a2939 80%, #00e6ff1a 100%);
+          color: #00e6ff;
+          font-weight: bold;
+          padding: 7px 10px;
+          border-radius: 8px;
+          box-shadow: 0 2px 7px #00e6ff12;
+          text-decoration: none;
+          font-size: .99em;
+          border: 1px solid #00e6ff40;
+          letter-spacing: .13px;
+          transition: background .15s;
+          white-space: nowrap;
+          filter: drop-shadow(0 0 4px #00e6ff66);
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          position: relative;
+          user-select: all;
+        }
+        .copy-addr {
+          cursor: pointer;
+        }
+        .presale-copied {
+          position: absolute;
+          top: -27px;
+          right: 5px;
+          color: #00e6ff;
+          background: #031925;
+          padding: 2px 8px;
+          border-radius: 6px;
+          font-weight: 700;
+          font-size: 0.89em;
+          box-shadow: 0 0 6px #00e6ff66;
+          animation: blink 1.2s step-end infinite alternate;
+          z-index: 100;
+        }
+        .presale-infopills {
+          display: flex;
+          gap: 7px;
+          margin-bottom: 10px;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: center;
+        }
+        .presale-card-section {
+          width: 99vw;
+          min-height: 42vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding-bottom: 14px;
+        }
+        .presale-img-anim {
+          width: 100%;
+          min-height: 90px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 11px;
+          margin-top: 7px;
+          pointer-events: none;
+          user-select: none;
+          position: relative;
+          transition: all .65s cubic-bezier(.45,1.08,.5,1.2);
+        }
+        .presale-img {
+          max-width: 170px;
+          border-radius: 15px;
+          box-shadow: 0 4px 13px #00e6ff45, 0 0 0 5px #00e6ff0c;
+          display: block;
+        }
+        .presale-card {
+          background: linear-gradient(115deg, #0c182b 86%, #00e6ff11 100%);
+          border: 2px solid #00e6ff77;
+          border-radius: 13px;
+          box-shadow: 0 8px 16px #00e6ff15, 0 0 0 2px #00e6ff22;
+          max-width: 99vw;
+          width: 95vw;
+          padding: 19px 7px 13px 7px;
+          margin: 0 auto 0 auto;
+          margin-bottom: 12px;
+          z-index: 1;
+          text-align: center;
+          color: #e4f8ff;
+          position: relative;
+        }
+        .presale-card-header {
+          font-weight: bold;
+          font-size: 1.07em;
+          color: #00e6ff;
+          margin-bottom: 8px;
+          text-shadow: 0 2px 9px #00e6ff44;
+          letter-spacing: .6px;
+          text-transform: uppercase;
+          animation: blink 1s steps(1,end) infinite alternate;
+        }
+        .presale-bnbbal {
+          margin: 0 0 9px 0;
+          font-size: .95em;
+          color: #00e6ff;
+          font-family: 'Share Tech Mono', monospace;
+        }
+        .presale-buy-wrap {
+          margin: 0 auto 5px auto;
+          padding: 10px 0 0 0;
+        }
+        .presale-buy-title {
+          font-weight: bold;
+          color: #00e6ff;
+          font-size: .98em;
+          margin-bottom: 5px;
+          letter-spacing: .03em;
+        }
+        .presale-buy-minmax {
+          font-weight: bold;
+          color: #00e6ff;
+          font-size: 0.92em;
+          margin-bottom: 6px;
+        }
+        .presale-buy-input-wrap {
+          display: flex;
+          align-items: center;
+          margin-bottom: 7px;
+          gap: 4px;
+          justify-content: center;
+        }
+        .presale-input {
+          border-radius: 6px;
+          border: 1.5px solid #00e6ff80;
+          padding: 9px 10px;
+          font-weight: bold;
+          width: 90px;
+          color: #fff;
+          background: #17253e;
+          font-family: 'Share Tech Mono', monospace;
+          font-size: 1em;
+          margin-right: 3px;
+        }
+        .presale-input-unit {
+          font-weight: 700;
+          color: #00e6ff;
+          font-size: 1em;
+        }
+        .presale-raamount {
+          font-size: .91em;
+          margin-bottom: 6px;
+          color: #00e6ff;
+          font-weight: bold;
+          letter-spacing: .5px;
+          min-height: 1.1em;
+        }
+        .presale-btn {
+          background: linear-gradient(90deg,#00e6ff 0%,#00b4fa 100%);
+          color: #fff;
+          font-weight: bold;
+          padding: 10px 14px;
+          border-radius: 13px;
+          border: none;
+          font-size: 1.04em;
+          cursor: pointer;
+          margin-bottom: 8px;
+          margin-top: 4px;
+          opacity: 1;
+          box-shadow: 0 2px 9px #00e6ff11;
+          letter-spacing: .6px;
+          outline: none;
+          transition: .14s;
+          width: 95vw;
+          max-width: 320px;
+          text-shadow: 0 0 7px #00e6ff, 0 0 10px #fff;
+        }
+        .presale-btn:disabled {
+          opacity: 0.57;
+          cursor: not-allowed;
+        }
+        .presale-error {
+          color: #d72a2a;
+          margin-top: 6px;
+          font-weight: bold;
+        }
+        .presale-success {
+          color: #00e6ff;
+          margin-top: 6px;
+          font-weight: bold;
+        }
+        .presale-supply-row {
+          font-size: .98em;
+          color: #00e6ff;
+          font-weight: bold;
+          margin-top: 12px;
+          text-shadow: 0 2px 7px #00e6ff25;
+          letter-spacing: 1.1px;
+        }
+        .presale-bottom-link {
+          margin: 20px auto 0 auto;
+          text-align: center;
+          width: 100vw;
+          display: flex;
+          justify-content: center;
+        }
+        .calc-footer-link {
+          color: #00e6ff;
+          margin-top: 14px;
+          margin-bottom: 11px;
+          display: inline-block;
+          font-size: 1em;
+          border-radius: 8px;
+          padding: 10px 20px;
+          background: #18273a;
+          text-decoration: none;
+          font-weight: bold;
+          box-shadow: 0 2px 5px #00e6ff12;
+          border: 1.5px solid #00e6ff29;
+          letter-spacing: .13px;
+          transition: background 0.14s, color 0.14s;
+          text-shadow: 0 0 8px #00e6ff;
+        }
+
+        @media (max-width: 700px) {
+          .presale-logo { width: 90px; height: 90px; padding: 5px; border-radius: 22px;}
+          .presale-timer-wrap { padding-top: 110px; }
+          .presale-title { font-size: 1em; }
+          .presale-timer { font-size: 1.12em; min-width:120px; padding:7px 9px; }
+        }
+        @media (max-width: 480px) {
+          .presale-bg, .presale-main-wrap, .presale-headline, .presale-card, .presale-card-section {
+            width: 100vw !important; max-width: 100vw !important; min-width: 100vw !important;
+          }
+          .presale-links { width: 100vw; }
+          .presale-img { max-width: 95vw; }
+          .presale-card { padding: 12px 3vw 11px 3vw; }
+          .presale-title { font-size: 0.89em; }
+          .presale-timer { font-size: 0.94em; padding: 7px 7px;}
+          .presale-logo { top: 16px; width: 65px; height: 65px; border-radius: 17px;}
+        }
+
+        @keyframes blink {
+          0% { filter: brightness(1.14) drop-shadow(0 0 7px #00e6ff77); }
+          100% { filter: brightness(1.29) drop-shadow(0 0 21px #00e6ffcc); }
+        }
+        @keyframes blinklogo {
+          0% { filter: brightness(1.07) drop-shadow(0 0 19px #00e6ffcc);}
+          100% { filter: brightness(1.37) drop-shadow(0 0 37px #00e6ff);}
         }
       `}</style>
     </div>
