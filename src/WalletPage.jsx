@@ -24,9 +24,14 @@ const tokenABI = [
   },
 ];
 
-export default function WalletPage() { 
+export default function WalletPage() {
   const [mounted, setMounted] = useState(false);
-useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null; // Wait for mount before rendering anything
 
   // Web3Modal & Wagmi hooks
   const { open } = useWeb3Modal();
@@ -268,76 +273,69 @@ useEffect(() => { setMounted(true); }, []);
               <i className="fas fa-wallet"></i> WALLET OVERVIEW
             </div>
             {/* Connect Wallet Button */}
-           {mounted && (
-  <>
-    {/* Connect Wallet Button */}
-    <button
-      style={{
-        padding: "16px 34px",
-        background: "linear-gradient(90deg, #0fffc7, #00c3ff)",
-        color: "#11131a",
-        border: "none",
-        borderRadius: "50px",
-        fontSize: "1.2rem",
-        cursor: "pointer",
-        marginBottom: 20,
-        fontWeight: "bold",
-        marginTop: 5
-      }}
-      onClick={open}
-    >
-      {isConnected ? "Connected" : "Connect Wallet"}
-    </button>
-    {/* Buy RA Atum Token Button */}
-    <button
-      style={{
-        padding: "13px 30px",
-        background: "linear-gradient(90deg, #ffd200, #00ffc6)",
-        color: "#11131a",
-        border: "none",
-        borderRadius: "50px",
-        fontSize: "1.14rem",
-        cursor: "pointer",
-        fontWeight: "bold",
-        marginBottom: "16px",
-        marginTop: "5px",
-        width: "100%"
-      }}
-      onClick={() => window.location.href = "/presale"}
-    >
-      <i className="fa-solid fa-bolt"></i> Buy RA Atum Token
-    </button>
-    {/* Wallet Address and info */}
-    <div
-      id="wallet-address"
-      className="wallet-address"
-      style={{
-        margin: "8px 0 17px 0",
-        fontSize: "0.98rem",
-        color: "#00b4fa",
-        wordBreak: "break-all",
-        letterSpacing: "0.6px",
-        minHeight: 20,
-        background: "#23243b",
-        borderRadius: 7,
-        padding: "6px 10px",
-        fontWeight: "bold",
-        display: "inline-block",
-        boxShadow: "0 2px 16px #00b4fa33",
-        border: "1.5px solid #00b4fa44",
-        fontFamily: "'Share Tech Mono', monospace",
-        textAlign: "center",
-        width: "100%",
-        alignSelf: "center",
-      }}
-    >
-      {isConnected && address
-        ? `Address: ${address.slice(0, 7)}...${address.slice(-4)}`
-        : "Not connected"}
-    </div>
-    {/* ...other wallet info rows */}
-  </>
-)}
+          <button
+  style={{
+    padding: "16px 34px",
+    background: "linear-gradient(90deg, #0fffc7, #00c3ff)",
+    color: "#11131a",
+    border: "none",
+    borderRadius: "50px",
+    fontSize: "1.2rem",
+    cursor: "pointer",
+    marginBottom: 20,
+    fontWeight: "bold",
+    marginTop: 5
+  }}
+  onClick={open}
+>
+  {isConnected ? "Connected" : "Connect Wallet"}
+</button>
+<button
+  style={{
+    padding: "13px 30px",
+    background: "linear-gradient(90deg, #ffd200, #00ffc6)",
+    color: "#11131a",
+    border: "none",
+    borderRadius: "50px",
+    fontSize: "1.14rem",
+    cursor: "pointer",
+    fontWeight: "bold",
+    marginBottom: "16px",
+    marginTop: "5px",
+    width: "100%"
+  }}
+  onClick={() => window.location.href = "/presale"}
+>
+  <i className="fa-solid fa-bolt"></i> Buy RA Atum Token
+</button>
+<div
+  id="wallet-address"
+  className="wallet-address"
+  style={{
+    margin: "8px 0 17px 0",
+    fontSize: "0.98rem",
+    color: "#00b4fa",
+    wordBreak: "break-all",
+    letterSpacing: "0.6px",
+    minHeight: 20,
+    background: "#23243b",
+    borderRadius: 7,
+    padding: "6px 10px",
+    fontWeight: "bold",
+    display: "inline-block",
+    boxShadow: "0 2px 16px #00b4fa33",
+    border: "1.5px solid #00b4fa44",
+    fontFamily: "'Share Tech Mono', monospace",
+    textAlign: "center",
+    width: "100%",
+    alignSelf: "center",
+  }}
+>
+  {isConnected && address
+    ? `Address: ${address.slice(0, 7)}...${address.slice(-4)}`
+    : "Not connected"}
+</div>
+
 
             <div
               className="wallet-info-row"
