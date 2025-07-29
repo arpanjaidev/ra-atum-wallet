@@ -15,9 +15,8 @@ const minBNB = 0.01;
 const maxBNB = 2;
 const rate = 50000;
 
-const presaleStart = 1753790930 * 1000;
-const presaleEnd = 1769342930 * 1000;
-
+const presaleStart = 1750178782 * 1000;
+const presaleEnd = 1765730782 * 1000;
 
 function copyToClipboard(text, setCopied) {
   navigator.clipboard.writeText(text).then(() => {
@@ -33,9 +32,27 @@ export default function PresalePage() {
   const [bnb, setBnb] = useState("");
   const [copied, setCopied] = useState(false);
 
+  // --- BNB LIVE PRICE (CoinGecko) ---
+  const [bnbUsd, setBnbUsd] = useState(null);
+  const [bnbInr, setBnbInr] = useState(null);
+
+  useEffect(() => {
+    async function fetchBNBPrice() {
+      try {
+        const res = await fetch(
+          "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd,inr"
+        );
+        const data = await res.json();
+        setBnbUsd(data.binancecoin.usd);
+        setBnbInr(data.binancecoin.inr);
+      } catch (err) {}
+    }
+    fetchBNBPrice();
+    const interval = setInterval(fetchBNBPrice, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Timer logic
-  const presaleStart = 1750178782 * 1000;
-  const presaleEnd = 1765730782 * 1000;
   const now = Date.now();
   const live = now > presaleStart && now < presaleEnd;
   const time =
@@ -54,7 +71,6 @@ export default function PresalePage() {
     return `${d}d ${h}h ${m}m ${s}s left`;
   }
 
-  // Timer state (blinks, updates every second)
   const [timerStr, setTimerStr] = useState(formatTimer(time));
   useEffect(() => {
     const id = setInterval(() => {
@@ -103,13 +119,11 @@ export default function PresalePage() {
   const [buyError, setBuyError] = useState("");
   const [buySuccess, setBuySuccess] = useState("");
 
-  // Clean up errors on input change
   useEffect(() => {
     setBuyError("");
     setBuySuccess("");
   }, [bnb]);
 
-  // Real Buy
   async function handleBuy() {
     setBuyError("");
     setBuySuccess("");
@@ -500,6 +514,26 @@ export default function PresalePage() {
                 </span>
               )}
             </div>
+            {/* --- LIVE BNB PRICE --- */}
+            {bnbUsd && bnbInr && (
+              <div
+                style={{
+                  margin: "6px 0 13px 0",
+                  fontSize: "1.03em",
+                  color: "#0fffc7",
+                  background: "#1f2430",
+                  padding: "6px 12px",
+                  borderRadius: "7px",
+                  border: "1px solid #00e6ff55",
+                  boxShadow: "0 0 10px #00e6ff22",
+                  display: "inline-block",
+                  letterSpacing: "1px",
+                }}
+              >
+                1 BNB = ₹{bnbInr.toLocaleString()} / ${bnbUsd.toFixed(2)}
+              </div>
+            )}
+
             <div
               style={{
                 margin: "0 auto 8px auto",
@@ -564,6 +598,12 @@ export default function PresalePage() {
                 />
                 <span style={{ fontWeight: 700, color: "#00e6ff" }}>BNB</span>
               </div>
+              {/* Show conversion value */}
+              {bnbUsd && bnbInr && bnb && Number(bnb) > 0 && (
+                <div style={{ fontSize: "0.97em", color: "#ffed8b", marginTop: 2, marginBottom: 8 }}>
+                  ≈ ₹{(Number(bnb) * bnbInr).toLocaleString()} / ${ (Number(bnb) * bnbUsd).toFixed(2) }
+                </div>
+              )}
               <div
                 style={{
                   fontSize: ".91em",
@@ -582,7 +622,6 @@ export default function PresalePage() {
                   ""
                 )}
               </div>
-
               {/* Real buy logic */}
               <button
                 style={{
