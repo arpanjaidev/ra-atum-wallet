@@ -9,14 +9,18 @@ const presaleAddress = "0x0424d65Ef97A6cCd269c39c2b8A3c1c31cBb7416";
 const tokenAddress = "0xcE06aDbB070c2f0d90Ba109E77c0c2Ff83F9Ff3A";
 const bscScanPresale = "https://bscscan.com/address/0x0424d65Ef97A6cCd269c39c2b8A3c1c31cBb7416";
 const tokenSupply = "21,000,000 (Million) RA ATUM";
-const startPrice = { rs: "₹0.55", usd: "$0.01", bnb: "0.00001" };
-const launchPrice = { rs: "₹15", usd: "$0.17", bnb: "0.0003" };
 const minBNB = 0.01;
 const maxBNB = 2;
 const rate = 50000;
 
 const presaleStart = 1750178782 * 1000;
 const presaleEnd = 1765730782 * 1000;
+
+// NEW: Prices as numbers for dynamic BNB calculation
+const startRs = 0.55;
+const startUsd = 0.01;
+const launchRs = 15;
+const launchUsd = 0.17;
 
 function copyToClipboard(text, setCopied) {
   navigator.clipboard.writeText(text).then(() => {
@@ -393,12 +397,16 @@ export default function PresalePage() {
           >
             <InfoPill
               label="Starting"
-              value={`${startPrice.rs} | ${startPrice.usd} | BNB ${startPrice.bnb}`}
+              value={`₹${startRs} | $${startUsd} | BNB ${
+                bnbUsd ? (startUsd / bnbUsd).toFixed(5) : "–"
+              }`}
               color="#00e6ff"
             />
             <InfoPill
               label="Launch"
-              value={`${launchPrice.rs} | ${launchPrice.usd} | BNB ${launchPrice.bnb}`}
+              value={`₹${launchRs} | $${launchUsd} | BNB ${
+                bnbUsd ? (launchUsd / bnbUsd).toFixed(5) : "–"
+              }`}
               color="#00e6ff"
             />
           </div>
