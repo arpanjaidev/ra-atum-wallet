@@ -4,7 +4,6 @@ import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount, useReadContract } from "wagmi";
 import { formatUnits } from "viem";
 
-
 // Token setup
 const tokenAddress = "0xcE06aDbB070c2f0d90Ba109E77c0c2Ff83F9Ff3A";
 const tokenABI = [
@@ -24,15 +23,36 @@ const tokenABI = [
   },
 ];
 
-export default function WalletPage() { 
-  const [mounted, setMounted] = useState(false);
-useEffect(() => { setMounted(true); }, []);
+export default function WalletPage() {
+  // For BNB Price
+  const [bnbUsd, setBnbUsd] = useState(null);
+  const [bnbInr, setBnbInr] = useState(null);
 
-  // Web3Modal & Wagmi hooks
+  useEffect(() => {
+    async function fetchBNBPrice() {
+      try {
+        const res = await fetch(
+          "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd,inr"
+        );
+        const data = await res.json();
+        setBnbUsd(data.binancecoin.usd);
+        setBnbInr(data.binancecoin.inr);
+      } catch (err) {
+        console.error("Error fetching BNB price", err);
+      }
+    }
+    fetchBNBPrice();
+    const interval = setInterval(fetchBNBPrice, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Wallet states and logic
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const { open } = useWeb3Modal();
   const { address, isConnected } = useAccount();
-
-  // Token balance
   const { data: decimals } = useReadContract({
     address: tokenAddress,
     abi: tokenABI,
@@ -46,7 +66,6 @@ useEffect(() => { setMounted(true); }, []);
     args: address ? [address] : undefined,
     chainId: 56,
   });
-
   let tokenBalance = "–";
   if (isConnected) {
     if (balanceLoading || decimals === undefined) tokenBalance = "Fetching...";
@@ -56,17 +75,13 @@ useEffect(() => { setMounted(true); }, []);
       });
     else tokenBalance = "0";
   }
-
   const referralEarnings = isConnected ? "0.00" : "–";
 
-  // Typing effect headline
+  // Typing Headline effect
   const [walletHeadline, setWalletHeadline] = useState("");
   const walletTypingText = "JOIN RA ATUM TO SHAPE THE FUTURE OF BLOCKCHAIN-POWERED KINDNESS.";
   useEffect(() => {
-    let wIndex = 0,
-      wTypingForward = true,
-      wBlinkOn = true,
-      stopped = false;
+    let wIndex = 0, wTypingForward = true, wBlinkOn = true, stopped = false;
     function typeWalletLine() {
       if (stopped) return;
       let html =
@@ -99,10 +114,9 @@ useEffect(() => { setMounted(true); }, []);
       stopped = true;
       clearInterval(blinkInt);
     };
-    // eslint-disable-next-line
   }, []);
 
-  // Calculator states
+  // Calculator logic
   const [calcValue, setCalcValue] = useState(100);
   const [startRs, setStartRs] = useState("₹0.00");
   const [startUsd, setStartUsd] = useState("$0.00");
@@ -110,19 +124,26 @@ useEffect(() => { setMounted(true); }, []);
   const [launchRs, setLaunchRs] = useState("₹0.00");
   const [launchUsd, setLaunchUsd] = useState("$0.00");
   const [launchBnb, setLaunchBnb] = useState("0.00000");
-
   useEffect(() => {
-    const startingPrice = { rs: 0.55, usd: 0.01, bnb: 0.00001 };
-    const launchPrice = { rs: 15, usd: 0.17, bnb: 0.0003 };
+    const startingPrice = {
+      rs: 0.55,
+      usd: 0.01,
+      bnb: bnbUsd ? 0.01 / bnbUsd : 0.00001,
+    };
+    const launchPrice = {
+      rs: 15,
+      usd: 0.17,
+      bnb: bnbUsd ? 0.17 / bnbUsd : 0.0003,
+    };
     setStartRs(`₹${(calcValue * startingPrice.rs).toFixed(2)}`);
     setStartUsd(`$${(calcValue * startingPrice.usd).toFixed(2)}`);
     setStartBnb((calcValue * startingPrice.bnb).toFixed(5));
     setLaunchRs(`₹${(calcValue * launchPrice.rs).toFixed(2)}`);
     setLaunchUsd(`$${(calcValue * launchPrice.usd).toFixed(2)}`);
     setLaunchBnb((calcValue * launchPrice.bnb).toFixed(5));
-  }, [calcValue]);
+  }, [calcValue, bnbUsd]);
 
-  // --- STYLE for full background and responsiveness
+  // --- STYLE for background and responsiveness
   return (
     <>
       <style>
@@ -133,9 +154,7 @@ useEffect(() => { setMounted(true); }, []);
             padding: 0;
             background: #0e1018 !important;
           }
-          body {
-            min-height: 100vh !important;
-          }
+          body { min-height: 100vh !important; }
           .wallet-main-bg {
             min-height: 100vh;
             background: #0e1018;
@@ -161,9 +180,7 @@ useEffect(() => { setMounted(true); }, []);
               min-width: unset !important;
               width: 98vw !important;
             }
-            .wallet-full-row {
-              gap: 6vw !important;
-            }
+            .wallet-full-row { gap: 6vw !important; }
           }
           @media (max-width: 480px) {
             .wallet-container, .wallet-calc-container {
@@ -262,83 +279,77 @@ useEffect(() => { setMounted(true); }, []);
                 textTransform: "uppercase",
                 textAlign: "center",
                 width: "100%",
-                marginTop: 10
+                marginTop: 10,
               }}
             >
               <i className="fas fa-wallet"></i> WALLET OVERVIEW
             </div>
-            {/* Connect Wallet Button */}
-           {mounted && (
-  <>
-    {/* Connect Wallet Button */}
-    <button
-      style={{
-        padding: "16px 34px",
-        background: "linear-gradient(90deg, #0fffc7, #00c3ff)",
-        color: "#11131a",
-        border: "none",
-        borderRadius: "50px",
-        fontSize: "1.2rem",
-        cursor: "pointer",
-        marginBottom: 20,
-        fontWeight: "bold",
-        marginTop: 5
-      }}
-      onClick={open}
-    >
-      {isConnected ? "Connected" : "Connect Wallet"}
-    </button>
-    {/* Buy RA Atum Token Button */}
-    <button
-      style={{
-        padding: "13px 30px",
-        background: "linear-gradient(90deg, #ffd200, #00ffc6)",
-        color: "#11131a",
-        border: "none",
-        borderRadius: "50px",
-        fontSize: "1.14rem",
-        cursor: "pointer",
-        fontWeight: "bold",
-        marginBottom: "16px",
-        marginTop: "5px",
-        width: "100%"
-      }}
-      onClick={() => window.location.href = "/presale"}
-    >
-      <i className="fa-solid fa-bolt"></i> Buy RA Atum Token
-    </button>
-    {/* Wallet Address and info */}
-    <div
-      id="wallet-address"
-      className="wallet-address"
-      style={{
-        margin: "8px 0 17px 0",
-        fontSize: "0.98rem",
-        color: "#00b4fa",
-        wordBreak: "break-all",
-        letterSpacing: "0.6px",
-        minHeight: 20,
-        background: "#23243b",
-        borderRadius: 7,
-        padding: "6px 10px",
-        fontWeight: "bold",
-        display: "inline-block",
-        boxShadow: "0 2px 16px #00b4fa33",
-        border: "1.5px solid #00b4fa44",
-        fontFamily: "'Share Tech Mono', monospace",
-        textAlign: "center",
-        width: "100%",
-        alignSelf: "center",
-      }}
-    >
-      {isConnected && address
-        ? `Address: ${address.slice(0, 7)}...${address.slice(-4)}`
-        : "Not connected"}
-    </div>
-    {/* ...other wallet info rows */}
-  </>
-)}
-
+            {mounted && (
+              <>
+                <button
+                  style={{
+                    padding: "16px 34px",
+                    background: "linear-gradient(90deg, #0fffc7, #00c3ff)",
+                    color: "#11131a",
+                    border: "none",
+                    borderRadius: "50px",
+                    fontSize: "1.2rem",
+                    cursor: "pointer",
+                    marginBottom: 20,
+                    fontWeight: "bold",
+                    marginTop: 5,
+                  }}
+                  onClick={open}
+                >
+                  {isConnected ? "Connected" : "Connect Wallet"}
+                </button>
+                <button
+                  style={{
+                    padding: "13px 30px",
+                    background: "linear-gradient(90deg, #ffd200, #00ffc6)",
+                    color: "#11131a",
+                    border: "none",
+                    borderRadius: "50px",
+                    fontSize: "1.14rem",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                    marginBottom: "16px",
+                    marginTop: "5px",
+                    width: "100%",
+                  }}
+                  onClick={() => window.location.href = "/presale"}
+                >
+                  <i className="fa-solid fa-bolt"></i> Buy RA Atum Token
+                </button>
+                <div
+                  id="wallet-address"
+                  className="wallet-address"
+                  style={{
+                    margin: "8px 0 17px 0",
+                    fontSize: "0.98rem",
+                    color: "#00b4fa",
+                    wordBreak: "break-all",
+                    letterSpacing: "0.6px",
+                    minHeight: 20,
+                    background: "#23243b",
+                    borderRadius: 7,
+                    padding: "6px 10px",
+                    fontWeight: "bold",
+                    display: "inline-block",
+                    boxShadow: "0 2px 16px #00b4fa33",
+                    border: "1.5px solid #00b4fa44",
+                    fontFamily: "'Share Tech Mono', monospace",
+                    textAlign: "center",
+                    width: "100%",
+                    alignSelf: "center",
+                  }}
+                >
+                  {isConnected && address
+                    ? `Address: ${address.slice(0, 7)}...${address.slice(-4)}`
+                    : "Not connected"}
+                </div>
+              </>
+            )}
             <div
               className="wallet-info-row"
               style={{
@@ -375,6 +386,25 @@ useEffect(() => { setMounted(true); }, []);
               <span>Referral Earnings</span>
               <span id="referral-earnings">{referralEarnings}</span>
             </div>
+            {bnbUsd && bnbInr && (
+              <div
+                style={{
+                  marginTop: 8,
+                  fontSize: "0.97em",
+                  color: "#0fffc7",
+                  background: "#1f2430",
+                  padding: "6px 12px",
+                  borderRadius: "6px",
+                  border: "1px solid #00b4fa55",
+                  boxShadow: "0 0 10px #00b4fa22",
+                  width: "100%",
+                  textAlign: "center",
+                  letterSpacing: "1px",
+                }}
+              >
+                1 BNB = ₹{bnbInr.toLocaleString()} / ${bnbUsd.toFixed(2)}
+              </div>
+            )}
           </div>
           <div
             className="wallet-calc-container"
@@ -438,13 +468,13 @@ useEffect(() => { setMounted(true); }, []);
                 Enter RA ATUM
               </label>
               <input
-  id="calc-ra"
-  className="calc-input"
-  type="number"
-  min="0"
-  placeholder="100"
-  value={calcValue === 0 ? "" : calcValue.toString().replace(/^0+/, "")}
-  onChange={(e) => setCalcValue(Number(e.target.value))}
+                id="calc-ra"
+                className="calc-input"
+                type="number"
+                min="0"
+                placeholder="100"
+                value={calcValue === 0 ? "" : calcValue.toString().replace(/^0+/, "")}
+                onChange={(e) => setCalcValue(Number(e.target.value))}
                 style={{
                   borderRadius: 6,
                   border: "1.5px solid #00b4fa77",
@@ -498,9 +528,9 @@ useEffect(() => { setMounted(true); }, []);
                 letterSpacing: ".2px",
               }}
             >
-              Starting: ₹0.55 | $0.01 | BNB 0.00001
+              Starting: ₹0.55 | $0.01 | BNB {bnbUsd ? (0.01 / bnbUsd).toFixed(5) : "0.00001"}
               <br />
-              Launch: ₹15 | $0.17 | BNB 0.0003
+              Launch: ₹15 | $0.17 | BNB {bnbUsd ? (0.17 / bnbUsd).toFixed(5) : "0.0003"}
             </div>
             <div className="calc-footer-space" style={{ minHeight: 38 }}></div>
           </div>
