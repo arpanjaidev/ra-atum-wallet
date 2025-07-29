@@ -11,12 +11,12 @@ const bscScanPresale = "https://bscscan.com/address/0x0424d65Ef97A6cCd269c39c2b8
 const tokenSupply = "21,000,000 (Million) RA ATUM";
 const minBNB = 0.01;
 const maxBNB = 2;
-const rate = 50000;
+const rate = 100000; // <-- UPDATE this to match your contract (see previous explanation!)
 
 const presaleStart = 1750178782 * 1000;
 const presaleEnd = 1765730782 * 1000;
 
-// NEW: Prices as numbers for dynamic BNB calculation
+// Prices as numbers for dynamic BNB calculation
 const startRs = 0.55;
 const startUsd = 0.01;
 const launchRs = 15;
@@ -36,7 +36,7 @@ export default function PresalePage() {
   const [bnb, setBnb] = useState("");
   const [copied, setCopied] = useState(false);
 
-  // --- BNB LIVE PRICE (CoinGecko) ---
+  // LIVE BNB PRICE (CoinGecko)
   const [bnbUsd, setBnbUsd] = useState(null);
   const [bnbInr, setBnbInr] = useState(null);
 
@@ -110,7 +110,7 @@ export default function PresalePage() {
   // Calculate RA amount
   const raAtumGet = bnb && parseFloat(bnb) > 0 ? (bnb * rate).toLocaleString() : "";
 
-  // -- Transaction logic with wagmi
+  // Transaction logic with wagmi
   const {
     data: txData,
     sendTransaction,
@@ -123,11 +123,16 @@ export default function PresalePage() {
   const [buyError, setBuyError] = useState("");
   const [buySuccess, setBuySuccess] = useState("");
 
+  // GIFT MODAL STATES
+  const [showGift, setShowGift] = useState(false);
+  const [pendingBuy, setPendingBuy] = useState(false);
+
   useEffect(() => {
     setBuyError("");
     setBuySuccess("");
   }, [bnb]);
 
+  // Now, Buy only called after modal is closed
   async function handleBuy() {
     setBuyError("");
     setBuySuccess("");
@@ -630,7 +635,7 @@ export default function PresalePage() {
                   ""
                 )}
               </div>
-              {/* Real buy logic */}
+              {/* Buy Button updated: show modal BEFORE transaction */}
               <button
                 style={{
                   background: "linear-gradient(90deg,#00e6ff 0%,#00b4fa 100%)",
@@ -656,7 +661,10 @@ export default function PresalePage() {
                   Number(bnb) < minBNB ||
                   Number(bnb) > maxBNB
                 }
-                onClick={handleBuy}
+                onClick={() => {
+                  setShowGift(true);
+                  setPendingBuy(true);
+                }}
               >
                 {isTxLoading
                   ? "Processing..."
@@ -736,6 +744,82 @@ export default function PresalePage() {
           <i className="fas fa-arrow-left"></i> Back to Home
         </a>
       </div>
+
+      {/* GIFT MODAL */}
+      {showGift && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          background: "rgba(0,0,0,0.76)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 10000,
+        }}>
+          <div style={{
+            background: "#181a29",
+            border: "2.5px solid #00e6ff",
+            borderRadius: 22,
+            boxShadow: "0 8px 36px #00e6ff88",
+            color: "#fff",
+            textAlign: "center",
+            padding: "44px 34px 30px 34px",
+            maxWidth: 340,
+            position: "relative",
+            fontFamily: "'Share Tech Mono', monospace",
+          }}>
+            <div style={{ fontSize: "2.4em", color: "#FFD700", marginBottom: 10 }}>
+              🎁
+            </div>
+            <div style={{
+              fontSize: "1.25em",
+              fontWeight: "bold",
+              marginBottom: 18,
+              color: "#00e6ff",
+              letterSpacing: "1.3px"
+            }}>
+              Congratulations!
+            </div>
+            <div style={{
+              fontSize: "1.07em",
+              color: "#bde6ff",
+              marginBottom: 13,
+            }}>
+              You received a bonus gift<br />
+              for joining the Presale!<br />
+              <b>+1,000 RA ATUM</b> <br />
+              <span style={{ color: "#FFD700", fontWeight: 900 }}>A Gift For You!</span>
+            </div>
+            <button
+              style={{
+                marginTop: 6,
+                padding: "10px 38px",
+                background: "linear-gradient(90deg, #FFD700, #00e6ff)",
+                color: "#181a29",
+                fontWeight: "bold",
+                border: "none",
+                borderRadius: 12,
+                fontSize: "1.1em",
+                cursor: "pointer",
+                boxShadow: "0 2px 14px #00e6ff55"
+              }}
+              onClick={() => {
+                setShowGift(false);
+                if (pendingBuy) {
+                  setPendingBuy(false);
+                  handleBuy(); // only after closing the gift
+                }
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Animation Keyframes and MOBILE FIX */}
       <style>{`
         @keyframes blink {
