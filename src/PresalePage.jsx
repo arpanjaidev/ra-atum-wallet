@@ -5,15 +5,19 @@ import { bsc } from "wagmi/chains";
 import { parseEther } from "viem";
 import { FaRegCopy } from "react-icons/fa6";
 
-const presaleAddress = "0xEbd8c8E89c64618E699eDb6f339331425d95EE3f";
+const presaleAddress = "0x0424d65Ef97A6cCd269c39c2b8A3c1c31cBb7416";
 const tokenAddress = "0xcE06aDbB070c2f0d90Ba109E77c0c2Ff83F9Ff3A";
-const bscScanPresale = "https://bscscan.com/address/0xEbd8c8E89c64618E699eDb6f339331425d95EE3f";
+const bscScanPresale = "https://bscscan.com/address/0x0424d65Ef97A6cCd269c39c2b8A3c1c31cBb7416";
 const tokenSupply = "21,000,000 (Million) RA ATUM";
 const startPrice = { rs: "₹0.55", usd: "$0.01", bnb: "0.00001" };
 const launchPrice = { rs: "₹15", usd: "$0.17", bnb: "0.0003" };
 const minBNB = 0.01;
 const maxBNB = 2;
 const rate = 50000;
+
+const presaleStart = 1753790930 * 1000;
+const presaleEnd = 1769342930 * 1000;
+
 
 function copyToClipboard(text, setCopied) {
   navigator.clipboard.writeText(text).then(() => {
