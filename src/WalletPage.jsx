@@ -133,88 +133,136 @@ export default function WalletPage() {
 
   return (
     <>
-      <style>{`
-        html, body, #root { background: #0c1221 !important; min-height: 100%; overflow-x: hidden !important;}
-        body { min-height: 100vh !important; }
-        .wallet-main-bg {
-          min-height: 100vh;
-          background: #0c1221 !important;
-          width: 100%;
-          margin: 0;
-          padding: 0;
-          display: flex;
-          flex-direction: column;
-          align-items: stretch;
-          justify-content: flex-start;
-          box-sizing: border-box;
-        }
-        .wallet-main-bg * {
-          box-sizing: border-box;
-        }
-        .wallet-glass {
-          background: rgba(10,16,40,0.88);
-          border: 2.5px solid #00f7ff55;
-          box-shadow: 0 0 26px #00b4fa55, 0 2px 24px #141a33, 0 0 0 1px #21e3fd44;
-          border-radius: 22px;
-          backdrop-filter: blur(3px);
-        }
-        .neon-shadow { box-shadow: 0 0 38px #23e6ff44, 0 0 0 7px #16192244; }
-        .wallet-headline {
-          font-size: 1.22em; text-align: center;
-          margin: 42px auto 40px auto;
-          background: linear-gradient(90deg,#fff 8%,#00f7ff 60%,#23e6ff 98%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          text-shadow: 0 2px 18px #00b4fa55,0 0 8px #00b4fa88,0 0 18px #00f7ff99;
-          filter: brightness(1.23) drop-shadow(0 0 3px #00e6ff99);
-          letter-spacing: 1.2px;
-          min-height: 1.7em;
-          font-family: 'Share Tech Mono', monospace;
-        }
-        .wallet-full-row {
-          display: flex;
-          align-items: flex-start;
-          justify-content: center;
-          gap: 48px;
-          padding: 0 0 12px 0;
-          max-width: 1250px;
-          margin: 0 auto 52px auto;
-          flex-wrap: nowrap;
-        }
-        @media (max-width: 1000px) {
-          .wallet-full-row { flex-direction: column; align-items: center; gap: 22px;}
-          .ra-logo-big { margin: 0 auto 14px auto !important; }
-        }
-        @media (max-width: 600px) {
-          .wallet-container, .wallet-calc-container { max-width: 98vw !important; width: 98vw !important; margin: 0 auto !important;}
-          .wallet-full-row { gap: 6vw !important; flex-direction: column !important; align-items: center !important; width: 100vw !important; max-width: 100vw !important; margin: 0 auto 22px auto !important;}
-          .wallet-headline { font-size: 1em !important; }
-        }
-        @media (max-width: 460px) {
-          .wallet-container, .wallet-calc-container { padding: 10px 0vw 10px 0vw !important;}
-          .ra-logo-big { width: 54vw !important; height: 54vw !important; min-width:54px !important; min-height:54px !important; max-width:124px !important; max-height:124px !important;}
-          .wallet-title { font-size: 1.03rem !important;}
-        }
-        .live-presale-bar {
-          background: linear-gradient(90deg,#00f7ff44 50%, #23e6ff22 100%);
-          border: 2px solid #00f7ff;
-          border-radius: 12px;
-          margin-top: 21px;
-          margin-bottom: 7px;
-          padding: 13px 16px 9px 16px;
-          text-align: center;
-          font-size: 1.09em;
-          font-weight: bold;
-          color: #00f7ff;
-          text-shadow: 0 2px 10px #00f7ff88;
-          letter-spacing: .7px;
-          box-shadow: 0 2px 18px #00f7ff44;
-          font-family: 'Share Tech Mono', monospace;
-        }
-        .live-presale-bar span { color: #fff; font-weight: normal; }
-        .live-presale-bar .sub { color:#14e7ef; font-size: 0.93em; font-weight:normal;}
-      `}</style>
+   <style>{`
+  html, body, #root {
+    background: #0c1221 !important;
+    min-height: 100%;
+    overflow-x: hidden !important;
+    width: 100vw;
+  }
+  body {
+    min-height: 100vh !important;
+  }
+  .wallet-main-bg {
+    min-height: 100vh;
+    background: #0c1221 !important;
+    width: 100%;
+    margin: 0;
+    padding: 0 0 32px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    box-sizing: border-box;
+  }
+  .wallet-main-bg * {
+    box-sizing: border-box;
+  }
+  .wallet-full-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 32px;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto 38px auto;
+    flex-wrap: nowrap;
+  }
+  .wallet-container, .wallet-calc-container {
+    max-width: 410px;
+    width: 100%;
+    min-width: unset !important;
+    margin: 0 auto;
+  }
+  @media (max-width: 900px) {
+    .wallet-full-row {
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+      width: 100%;
+      max-width: 100%;
+    }
+    .wallet-container, .wallet-calc-container {
+      max-width: 98vw;
+      width: 98vw;
+      min-width: unset;
+      margin: 0 auto;
+    }
+  }
+  @media (max-width: 600px) {
+    .wallet-main-bg {
+      padding: 0 2vw 24px 2vw !important;
+    }
+    .wallet-container, .wallet-calc-container {
+      max-width: 99vw !important;
+      width: 99vw !important;
+      padding: 18px 3vw 18px 3vw !important;
+      margin: 0 auto !important;
+    }
+    .wallet-full-row {
+      gap: 12px !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      width: 100vw !important;
+      max-width: 100vw !important;
+      margin: 0 auto 22px auto !important;
+    }
+    .wallet-headline {
+      font-size: 1em !important;
+      padding: 0 3vw !important;
+    }
+  }
+  @media (max-width: 420px) {
+    .wallet-container, .wallet-calc-container {
+      max-width: 100vw !important;
+      width: 100vw !important;
+      padding: 12px 0vw 12px 0vw !important;
+    }
+    .wallet-headline { font-size: .98em !important; }
+  }
+  .wallet-glass {
+    background: rgba(10,16,40,0.88);
+    border: 2.5px solid #00f7ff55;
+    box-shadow: 0 0 26px #00b4fa55, 0 2px 24px #141a33, 0 0 0 1px #21e3fd44;
+    border-radius: 22px;
+    backdrop-filter: blur(3px);
+  }
+  .neon-shadow { box-shadow: 0 0 38px #23e6ff44, 0 0 0 7px #16192244; }
+  .wallet-headline {
+    font-size: 1.22em;
+    text-align: center;
+    margin: 42px auto 40px auto;
+    background: linear-gradient(90deg,#fff 8%,#00f7ff 60%,#23e6ff 98%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 2px 18px #00b4fa55,0 0 8px #00b4fa88,0 0 18px #00f7ff99;
+    filter: brightness(1.23) drop-shadow(0 0 3px #00e6ff99);
+    letter-spacing: 1.2px;
+    min-height: 1.7em;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .live-presale-bar {
+    background: linear-gradient(90deg,#00f7ff44 50%, #23e6ff22 100%);
+    border: 2px solid #00f7ff;
+    border-radius: 12px;
+    margin-top: 21px;
+    margin-bottom: 7px;
+    padding: 13px 16px 9px 16px;
+    text-align: center;
+    font-size: 1.09em;
+    font-weight: bold;
+    color: #00f7ff;
+    text-shadow: 0 2px 10px #00f7ff88;
+    letter-spacing: .7px;
+    box-shadow: 0 2px 18px #00f7ff44;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .live-presale-bar span { color: #fff; font-weight: normal; }
+  .live-presale-bar .sub { color:#14e7ef; font-size: 0.93em; font-weight:normal;}
+`}
+   </style>
+
       <div className="wallet-main-bg">
         <div
           className="wallet-headline"
