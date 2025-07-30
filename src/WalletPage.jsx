@@ -134,7 +134,7 @@ export default function WalletPage() {
   return (
     <>
       <style>{`
-        html, body, #root { background: #0c1221 !important; min-height: 100%; }
+        html, body, #root { background: none !important; min-height: 100%; }
         body { min-height: 100vh !important; }
         .wallet-main-bg {
           min-height: 100vh;
@@ -145,7 +145,7 @@ export default function WalletPage() {
           flex-direction: column;
           align-items: stretch;
           justify-content: flex-start;
-          /* -- Custom background image only, no gradient -- */
+          /* ONLY this image as background! */
           background: url('https://i.pinimg.com/736x/36/91/6d/36916d7d15271edee254a33c542a82be.jpg') no-repeat center center fixed;
           background-size: cover;
           background-position: center;
