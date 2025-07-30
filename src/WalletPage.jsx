@@ -161,7 +161,7 @@ export default function WalletPage() {
           flex-direction: column;
           align-items: stretch;
           justify-content: flex-start;
-          background: url('/a0946167-a4a3-4346-b14b-0dc9455c795f.png') no-repeat center center fixed;
+          background: url('/2e7f4d7e455a3cb387dcd78ccf35886c.jpg') no-repeat center center fixed;
           background-size: cover;
           background-position: center;
         }
