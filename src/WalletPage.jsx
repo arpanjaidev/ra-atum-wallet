@@ -138,7 +138,6 @@ export default function WalletPage() {
         body { min-height: 100vh !important; }
         .wallet-main-bg {
           min-height: 100vh;
-          background: radial-gradient(circle at 45% 0%, #021227 0%, #152142 60%, #0c1221 100%);
           width: 100vw;
           margin: 0;
           padding: 0;
@@ -146,6 +145,10 @@ export default function WalletPage() {
           flex-direction: column;
           align-items: stretch;
           justify-content: flex-start;
+          /* -- Custom background image only, no gradient -- */
+          background: url('https://i.pinimg.com/736x/36/91/6d/36916d7d15271edee254a33c542a82be.jpg') no-repeat center center fixed;
+          background-size: cover;
+          background-position: center;
         }
         .wallet-glass {
           background: rgba(10,16,40,0.88);
