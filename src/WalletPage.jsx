@@ -139,7 +139,8 @@ export default function WalletPage() {
           width: 100vw !important;
           margin: 0 !important;
           padding: 0 !important;
-          background: none !important;
+          background: #0c1221 !important;
+          overflow-x: hidden !important;
         }
         body {
           min-height: 100vh !important;
@@ -161,9 +162,7 @@ export default function WalletPage() {
           flex-direction: column;
           align-items: stretch;
           justify-content: flex-start;
-          background: url('/a0946167-a4a3-4346-b14b-0dc9455c795f.png') no-repeat center center fixed;
-          background-size: cover;
-          background-position: center;
+          background: #0c1221 !important;
         }
         .wallet-glass {
           background: rgba(10,16,40,0.88);
