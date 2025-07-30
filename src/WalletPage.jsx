@@ -1,3 +1,4 @@
+// src/WalletPage.jsx
 import React, { useEffect, useState } from "react";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount, useReadContract } from "wagmi";
@@ -134,44 +135,46 @@ export default function WalletPage() {
     <>
       <style>{`
         html, body, #root {
-          min-height: 100vh !important;
-          height: 100vh !important;
-          width: 100vw !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          background: none !important;
-          box-sizing: border-box !important;
+          background: #0c1221 !important;
+          min-height: 100%;
         }
-        body, #root {
-          min-height: 100vh !important;
-          height: 100vh !important;
-          width: 100vw !important;
-          overflow: hidden;
-        }
+        body { min-height: 100vh !important; }
         .wallet-main-bg {
-          position: fixed;
-          top: 0; left: 0; right: 0; bottom: 0;
-          min-height: 100vh !important;
-          height: 100vh !important;
-          width: 100vw !important;
-          margin: 0 !important;
-          padding: 0 !important;
+          min-height: 100vh;
+          min-width: 100vw;
+          width: 100vw;
+          height: 100vh;
+          margin: 0;
+          padding: 0;
           display: flex;
           flex-direction: column;
           align-items: stretch;
           justify-content: flex-start;
-          background: url('/2e7f4d7e455a3cb387dcd78ccf35886c.jpg') no-repeat center center fixed;
+          /* Updated background image: */
+          background: url('https://i.pinimg.com/1200x/4b/1d/16/4b1d1631e56f97b23df10781d628215f.jpg') no-repeat center center fixed;
           background-size: cover;
-          background-position: center;
-          z-index: -1;
-        }
-        .wallet-content {
+          background-repeat: no-repeat;
+          background-position: center center;
           position: relative;
-          z-index: 2;
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
+          z-index: 0;
         }
+        .wallet-main-bg:before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0; bottom: 0;
+          z-index: 1;
+          background: rgba(12,18,33, 0.70); /* for overlay/darkening, can adjust opacity or remove */
+          pointer-events: none;
+        }
+        .wallet-glass {
+          background: rgba(10,16,40,0.88);
+          border: 2.5px solid #00f7ff55;
+          box-shadow: 0 0 26px #00b4fa55, 0 2px 24px #141a33, 0 0 0 1px #21e3fd44;
+          border-radius: 22px;
+          backdrop-filter: blur(3px);
+          z-index: 2;
+        }
+        .neon-shadow { box-shadow: 0 0 38px #23e6ff44, 0 0 0 7px #16192244; }
         .wallet-headline {
           font-size: 1.22em; text-align: center;
           margin: 42px auto 40px auto;
@@ -184,6 +187,7 @@ export default function WalletPage() {
           letter-spacing: 1.2px;
           min-height: 1.7em;
           font-family: 'Share Tech Mono', monospace;
+          z-index: 2;
         }
         .wallet-full-row {
           display: flex;
@@ -194,15 +198,8 @@ export default function WalletPage() {
           max-width: 1250px;
           margin: 0 auto 52px auto;
           flex-wrap: nowrap;
+          z-index: 2;
         }
-        .wallet-glass {
-          background: rgba(10,16,40,0.88);
-          border: 2.5px solid #00f7ff55;
-          box-shadow: 0 0 26px #00b4fa55, 0 2px 24px #141a33, 0 0 0 1px #21e3fd44;
-          border-radius: 22px;
-          backdrop-filter: blur(3px);
-        }
-        .neon-shadow { box-shadow: 0 0 38px #23e6ff44, 0 0 0 7px #16192244; }
         @media (max-width: 1000px) {
           .wallet-full-row { flex-direction: column; align-items: center; gap: 22px;}
           .ra-logo-big { margin: 0 auto 14px auto !important; }
@@ -236,8 +233,7 @@ export default function WalletPage() {
         .live-presale-bar span { color: #fff; font-weight: normal; }
         .live-presale-bar .sub { color:#14e7ef; font-size: 0.93em; font-weight:normal;}
       `}</style>
-      <div className="wallet-main-bg"></div>
-      <div className="wallet-content">
+      <div className="wallet-main-bg">
         <div
           className="wallet-headline"
           dangerouslySetInnerHTML={{ __html: walletHeadline }}
@@ -537,6 +533,7 @@ export default function WalletPage() {
             width: "100%",
             display: "flex",
             justifyContent: "center",
+            zIndex: 2,
           }}
         >
           <a
