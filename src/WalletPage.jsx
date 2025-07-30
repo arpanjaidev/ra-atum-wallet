@@ -134,18 +134,22 @@ export default function WalletPage() {
   return (
     <>
       <style>{`
-        html, body, #root { background: #0c1221 !important; min-height: 100%; }
+        html, body, #root { background: #0c1221 !important; min-height: 100%; overflow-x: hidden !important;}
         body { min-height: 100vh !important; }
         .wallet-main-bg {
           min-height: 100vh;
           background: #0c1221 !important;
-          width: 100vw;
+          width: 100%;
           margin: 0;
           padding: 0;
           display: flex;
           flex-direction: column;
           align-items: stretch;
           justify-content: flex-start;
+          box-sizing: border-box;
+        }
+        .wallet-main-bg * {
+          box-sizing: border-box;
         }
         .wallet-glass {
           background: rgba(10,16,40,0.88);
@@ -183,8 +187,8 @@ export default function WalletPage() {
           .ra-logo-big { margin: 0 auto 14px auto !important; }
         }
         @media (max-width: 600px) {
-          .wallet-container, .wallet-calc-container { max-width: 97vw !important; width: 99vw !important;}
-          .wallet-full-row { gap: 6vw !important; }
+          .wallet-container, .wallet-calc-container { max-width: 98vw !important; width: 98vw !important; margin: 0 auto !important;}
+          .wallet-full-row { gap: 6vw !important; flex-direction: column !important; align-items: center !important; width: 100vw !important; max-width: 100vw !important; margin: 0 auto 22px auto !important;}
           .wallet-headline { font-size: 1em !important; }
         }
         @media (max-width: 460px) {
