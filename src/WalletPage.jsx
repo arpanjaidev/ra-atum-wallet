@@ -116,32 +116,24 @@ export default function WalletPage() {
     };
   }, []);
 
-  // Calculator logic
+  // Calculator logic (always uses live BNB price)
   const [calcValue, setCalcValue] = useState(100);
-  const [startRs, setStartRs] = useState("₹0.00");
-  const [startUsd, setStartUsd] = useState("$0.00");
-  const [startBnb, setStartBnb] = useState("0.00000");
-  const [launchRs, setLaunchRs] = useState("₹0.00");
-  const [launchUsd, setLaunchUsd] = useState("$0.00");
-  const [launchBnb, setLaunchBnb] = useState("0.00000");
-  useEffect(() => {
-    const startingPrice = {
-      rs: 0.55,
-      usd: 0.01,
-      bnb: bnbUsd ? 0.01 / bnbUsd : 0.00001,
-    };
-    const launchPrice = {
-      rs: 15,
-      usd: 0.17,
-      bnb: bnbUsd ? 0.17 / bnbUsd : 0.0003,
-    };
-    setStartRs(`₹${(calcValue * startingPrice.rs).toFixed(2)}`);
-    setStartUsd(`$${(calcValue * startingPrice.usd).toFixed(2)}`);
-    setStartBnb((calcValue * startingPrice.bnb).toFixed(5));
-    setLaunchRs(`₹${(calcValue * launchPrice.rs).toFixed(2)}`);
-    setLaunchUsd(`$${(calcValue * launchPrice.usd).toFixed(2)}`);
-    setLaunchBnb((calcValue * launchPrice.bnb).toFixed(5));
-  }, [calcValue, bnbUsd]);
+  // Starting and launch prices per RA
+  const startPriceInr = 0.55;
+  const launchPriceInr = 15;
+  // Live USD/BNB per RA (live logic)
+  const startPriceUsd = bnbInr && bnbUsd ? (startPriceInr / bnbInr * bnbUsd) : 0.01;
+  const launchPriceUsd = bnbInr && bnbUsd ? (launchPriceInr / bnbInr * bnbUsd) : 0.17;
+  const startPriceBnb = bnbInr ? (startPriceInr / bnbInr) : 0.00001;
+  const launchPriceBnb = bnbInr ? (launchPriceInr / bnbInr) : 0.0003;
+
+  // Calculator outputs
+  const startRs = `₹${(calcValue * startPriceInr).toLocaleString(undefined, {maximumFractionDigits:2})}`;
+  const startUsd = `$${(calcValue * startPriceUsd).toLocaleString(undefined, {maximumFractionDigits:2})}`;
+  const startBnb = (calcValue * startPriceBnb).toFixed(5);
+  const launchRs = `₹${(calcValue * launchPriceInr).toLocaleString(undefined, {maximumFractionDigits:2})}`;
+  const launchUsd = `$${(calcValue * launchPriceUsd).toLocaleString(undefined, {maximumFractionDigits:2})}`;
+  const launchBnb = (calcValue * launchPriceBnb).toFixed(5);
 
   // --- STYLE for background and responsiveness
   return (
@@ -528,9 +520,9 @@ export default function WalletPage() {
                 letterSpacing: ".2px",
               }}
             >
-              Starting: ₹0.55 | $0.01 | BNB {bnbUsd ? (0.01 / bnbUsd).toFixed(5) : "0.00001"}
+              Starting: ₹0.55 | ${bnbInr && bnbUsd ? startPriceUsd.toFixed(2) : "0.01"} | BNB {startPriceBnb.toFixed(5)}
               <br />
-              Launch: ₹15 | $0.17 | BNB {bnbUsd ? (0.17 / bnbUsd).toFixed(5) : "0.0003"}
+              Launch: ₹15 | ${bnbInr && bnbUsd ? launchPriceUsd.toFixed(2) : "0.17"} | BNB {launchPriceBnb.toFixed(5)}
             </div>
             <div className="calc-footer-space" style={{ minHeight: 38 }}></div>
           </div>
