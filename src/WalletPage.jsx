@@ -4,7 +4,6 @@ import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount, useReadContract } from "wagmi";
 import { formatUnits } from "viem";
 
-// Token setup
 const tokenAddress = "0xcE06aDbB070c2f0d90Ba109E77c0c2Ff83F9Ff3A";
 const tokenABI = [
   {
@@ -24,7 +23,7 @@ const tokenABI = [
 ];
 
 export default function WalletPage() {
-  // --- Live BNB price fetch
+  // Live BNB price fetch
   const [bnbUsd, setBnbUsd] = useState(null);
   const [bnbInr, setBnbInr] = useState(null);
   useEffect(() => {
@@ -46,7 +45,7 @@ export default function WalletPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // --- Wallet logic
+  // Wallet logic
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const { open } = useWeb3Modal();
@@ -75,7 +74,7 @@ export default function WalletPage() {
   }
   const referralEarnings = isConnected ? "0.00" : "–";
 
-  // --- Typing effect headline
+  // Typing effect headline
   const [walletHeadline, setWalletHeadline] = useState("");
   const walletTypingText = "JOIN RA ATUM TO SHAPE THE FUTURE OF BLOCKCHAIN-POWERED KINDNESS.";
   useEffect(() => {
@@ -109,7 +108,7 @@ export default function WalletPage() {
     return () => { stopped = true; clearInterval(blinkInt); };
   }, []);
 
-  // --- Calculator
+  // Calculator
   const [calcValue, setCalcValue] = useState(1000);
   const livePresalePrice = {
     inr: bnbInr ? (0.01 * bnbInr).toFixed(4) : "0.0000",
@@ -130,7 +129,6 @@ export default function WalletPage() {
         html, body, #root {
           min-height: 100vh !important;
           margin: 0; padding: 0;
-          background: #050b12;
         }
         body {
           background: url('https://i.pinimg.com/1200x/52/50/a6/5250a6ebb1739452d85599607b904ced.jpg') no-repeat center center fixed !important;
@@ -145,9 +143,6 @@ export default function WalletPage() {
           flex-direction: column;
           align-items: stretch;
           justify-content: flex-start;
-        }
-        .wallet-headline {
-          text-shadow: 0 0 22px #0fffc777, 0 2px 16px #00b4fa44;
         }
         .wallet-full-row {
           display: flex;
@@ -183,11 +178,10 @@ export default function WalletPage() {
           border: 3px solid #00b4fa44;
           margin: 0 0 22px 0;
           display: block;
-          transition: transform .22s;
         }
         .wallet-title {
-          font-size: 1.27rem;
-          letter-spacing: 1.4px;
+          font-size: 1.22rem;
+          letter-spacing: 1.2px;
           font-weight: bold;
           margin-bottom: 18px;
           background: linear-gradient(90deg, #fff 8%, #0fffc7 60%, #23e6ff 98%);
@@ -195,56 +189,59 @@ export default function WalletPage() {
           -webkit-text-fill-color: transparent;
           background-clip: text;
           text-shadow: 0 2px 18px #22213866, 0 0 8px #00b4fa88, 0 0 18px #00b4fa99;
-          filter: brightness(1.16) drop-shadow(0 0 3px #00e6ff99);
+          filter: brightness(1.14) drop-shadow(0 0 3px #00e6ff99);
           text-transform: uppercase;
           text-align: center;
           width: 100%;
           margin-top: 10px;
         }
         .neon-btn, .neon-btn:focus {
-          padding: 16px 34px;
+          padding: 10px 22px;
           background: linear-gradient(90deg, #0fffc7, #00c3ff 98%);
           color: #0b1834;
           border: none;
           border-radius: 50px;
-          font-size: 1.2rem;
+          font-size: 1.08rem;
           cursor: pointer;
           font-weight: bold;
-          margin-bottom: 22px;
+          margin-bottom: 13px;
           margin-top: 5px;
-          width: 100%;
+          width: 90%;
+          max-width: 240px;
           transition: all .18s;
-          box-shadow: 0 0 24px #0fffc755, 0 3px 16px #00b4fa33;
+          box-shadow: 0 0 16px #0fffc755, 0 2px 12px #00b4fa33;
           outline: none;
+          display: block;
+          margin-left: auto;
+          margin-right: auto;
         }
         .neon-btn.buy {
           background: linear-gradient(90deg, #ffd200, #00ffc6 98%);
           color: #05212d;
-          margin-bottom: 18px;
-          font-size: 1.15rem;
-          border-radius: 44px;
+          font-size: 1.02rem;
           font-weight: 900;
         }
         .neon-btn:hover, .neon-btn:active {
           background: #222a47;
           color: #0fffc7;
-          box-shadow: 0 0 40px #0fffc7, 0 2px 26px #23e6ff55;
+          box-shadow: 0 0 24px #0fffc7, 0 2px 16px #23e6ff55;
           transform: scale(1.045);
         }
         .wallet-address {
-          font-size: 1rem;
+          font-size: 0.97rem;
           color: #0fffc7;
           word-break: break-all;
-          letter-spacing: 0.7px;
+          letter-spacing: 0.5px;
           background: #171e2c;
           border-radius: 7px;
-          padding: 7px 12px;
+          padding: 6px 10px;
           font-weight: bold;
           box-shadow: 0 2px 16px #00b4fa33;
           border: 1.5px solid #00f7ff44;
           font-family: 'Share Tech Mono', monospace;
           text-align: center;
-          width: 100%;
+          width: 99%;
+          max-width: 99%;
           align-self: center;
           overflow-x: auto;
           white-space: nowrap;
@@ -255,7 +252,7 @@ export default function WalletPage() {
           justify-content: space-between;
           width: 100%;
           margin: 11px 0 11px 0;
-          font-size: 1.09rem;
+          font-size: 1.07rem;
           font-weight: bold;
           color: #e7d7b6;
           border-bottom: 1px solid #28354a;
@@ -263,14 +260,15 @@ export default function WalletPage() {
         }
         .wallet-bnb-line {
           margin-top: 13px;
-          font-size: 1.03em;
+          font-size: 1.02em;
           color: #0fffc7;
           background: #171e2c;
-          padding: 8px 7px;
+          padding: 6px 7px;
           border-radius: 6px;
           border: 1.5px solid #00f7ff55;
           box-shadow: 0 0 10px #00f7ff22;
-          width: 100%;
+          width: 99%;
+          max-width: 99%;
           text-align: center;
           letter-spacing: 1px;
           overflow-x: auto;
@@ -278,7 +276,7 @@ export default function WalletPage() {
           font-family: 'Share Tech Mono', monospace;
         }
         .calc-title-shine {
-          font-size: 1.16em;
+          font-size: 1.13em;
           font-weight: bold;
           text-transform: uppercase;
           background: linear-gradient(90deg, #fff 8%, #0fffc7 60%, #23e6ff 98%);
@@ -288,20 +286,20 @@ export default function WalletPage() {
           text-shadow: 0 2px 18px #22213866,0 0 8px #00b4fa88,0 0 18px #00b4fa99;
           filter: brightness(1.17) drop-shadow(0 0 3px #0fffc7bb);
           letter-spacing: 1.12px;
-          margin-bottom: 18px;
+          margin-bottom: 16px;
         }
         .calc-row {
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 10px;
-          margin-bottom: 14px;
+          margin-bottom: 12px;
         }
         .calc-row label {
           color: #0fffc7;
-          font-size: 1.12em;
+          font-size: 1.09em;
           font-weight: 700;
-          min-width: 120px;
+          min-width: 110px;
           text-align: right;
         }
         .calc-input {
@@ -309,10 +307,10 @@ export default function WalletPage() {
           border: 2px solid #0fffc799;
           background: #171e2c;
           color: #fff;
-          padding: 8px 16px;
-          font-size: 1.17em;
+          padding: 7px 12px;
+          font-size: 1.1em;
           font-family: 'Share Tech Mono', monospace;
-          width: 100px;
+          width: 80px;
           outline: none;
           font-weight: 700;
           box-shadow: 0 0 8px #0fffc733;
@@ -328,28 +326,27 @@ export default function WalletPage() {
           margin-top: 10px;
           background: #101c25;
           border-radius: 15px;
-          padding: 21px 12px 18px 12px;
+          padding: 18px 8px 14px 8px;
           color: #0fffc7;
           font-weight: 800;
-          font-size: 1.15em;
-          box-shadow: 0 0 28px #0fffc726, 0 0 0 2px #0fffc733;
+          font-size: 1.11em;
+          box-shadow: 0 0 18px #0fffc726, 0 0 0 2px #0fffc733;
           border: 2.2px solid #0fffc7cc;
-          min-width: 230px;
+          min-width: 190px;
           width: 100%;
-          max-width: 350px;
+          max-width: 310px;
           text-align: left;
           font-family: 'Share Tech Mono', monospace;
           line-height: 1.55em;
-          letter-spacing: 1.2px;
+          letter-spacing: 1.1px;
         }
         @media (max-width: 850px) {
           .wallet-full-row { flex-direction: column; align-items: center; gap: 24px; }
           .wallet-container, .wallet-calc-container { width: 97vw; min-width: unset; max-width: 97vw;}
         }
         @media (max-width: 600px) {
-          .wallet-container, .wallet-calc-container { padding: 18px 4vw 18px 4vw; }
-          .wallet-headline { font-size: 0.92em !important; }
-          .live-presale-bar { max-width: 98vw; font-size: 1em; }
+          .wallet-container, .wallet-calc-container { padding: 14px 2vw 14px 2vw; }
+          .live-presale-bar { max-width: 99vw; font-size: 1em; }
         }
         `}
       </style>
@@ -360,7 +357,7 @@ export default function WalletPage() {
             textAlign: "center",
             marginTop: 18,
             marginBottom: 28,
-            fontSize: "1.13em",
+            fontSize: "1.09em",
             fontWeight: "bold",
             textTransform: "uppercase",
             background: "linear-gradient(90deg,#fff 8%,#0fffc7 60%,#23e6ff 98%)",
@@ -368,9 +365,9 @@ export default function WalletPage() {
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
             textShadow: "0 2px 18px #22213866,0 0 8px #0fffc799",
-            filter: "brightness(1.13) drop-shadow(0 0 2px #0fffc777)",
-            letterSpacing: "1.12px",
-            minHeight: "1.6em",
+            filter: "brightness(1.12) drop-shadow(0 0 2px #0fffc777)",
+            letterSpacing: "1.1px",
+            minHeight: "1.5em",
           }}
           dangerouslySetInnerHTML={{ __html: walletHeadline }}
         />
@@ -462,10 +459,10 @@ export default function WalletPage() {
             </div>
           </div>
         </div>
-        {/* Spacer or nav below */}
+        {/* Spacer/nav */}
         <div
           style={{
-            margin: "0 auto 36px auto",
+            margin: "0 auto 28px auto",
             textAlign: "center",
             width: "100%",
             display: "flex",
@@ -477,11 +474,11 @@ export default function WalletPage() {
             className="calc-footer-link"
             style={{
               color: "#0fffc7",
-              marginTop: 28,
+              marginTop: 20,
               display: "inline-block",
-              fontSize: "1.07em",
+              fontSize: "1.04em",
               borderRadius: 7,
-              padding: "11px 33px",
+              padding: "10px 32px",
               background: "#141f28cc",
               textDecoration: "none",
               border: "1.7px solid #0fffc788",
