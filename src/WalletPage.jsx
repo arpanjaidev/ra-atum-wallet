@@ -1,4 +1,3 @@
-// src/WalletPage.jsx
 import React, { useEffect, useState } from "react";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount, useReadContract } from "wagmi";
@@ -134,10 +133,27 @@ export default function WalletPage() {
   return (
     <>
       <style>{`
-        html, body, #root { background: none !important; min-height: 100%; }
-        body { min-height: 100vh !important; }
+        html, body, #root {
+          min-height: 100vh !important;
+          height: 100% !important;
+          width: 100vw !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          background: none !important;
+        }
+        body {
+          min-height: 100vh !important;
+          height: 100% !important;
+          width: 100vw !important;
+        }
+        #root {
+          min-height: 100vh !important;
+          height: 100% !important;
+          width: 100vw !important;
+        }
         .wallet-main-bg {
           min-height: 100vh;
+          height: 100vh;
           width: 100vw;
           margin: 0;
           padding: 0;
@@ -145,8 +161,7 @@ export default function WalletPage() {
           flex-direction: column;
           align-items: stretch;
           justify-content: flex-start;
-          /* ONLY this image as background! */
-          background: url('https://i.pinimg.com/736x/36/91/6d/36916d7d15271edee254a33c542a82be.jpg') no-repeat center center fixed;
+          background: url('/a0946167-a4a3-4346-b14b-0dc9455c795f.png') no-repeat center center fixed;
           background-size: cover;
           background-position: center;
         }
