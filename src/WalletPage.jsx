@@ -24,7 +24,7 @@ const tokenABI = [
 ];
 
 export default function WalletPage() {
-  // For BNB Price
+  // Live BNB prices
   const [bnbUsd, setBnbUsd] = useState(null);
   const [bnbInr, setBnbInr] = useState(null);
 
@@ -46,7 +46,7 @@ export default function WalletPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Wallet states and logic
+  // Wallet states
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
@@ -77,7 +77,7 @@ export default function WalletPage() {
   }
   const referralEarnings = isConnected ? "0.00" : "–";
 
-  // Typing Headline effect
+  // Headline typing effect
   const [walletHeadline, setWalletHeadline] = useState("");
   const walletTypingText = "JOIN RA ATUM TO SHAPE THE FUTURE OF BLOCKCHAIN-POWERED KINDNESS.";
   useEffect(() => {
@@ -86,12 +86,12 @@ export default function WalletPage() {
       if (stopped) return;
       let html =
         walletTypingText.substring(0, wIndex) +
-        `<span style="color:#00b4fa;font-weight:bold;font-size:1.15em;">${wBlinkOn ? "|" : "&nbsp;"}</span>`;
+        `<span style="color:#00f7ff;font-weight:bold;font-size:1.17em;">${wBlinkOn ? "|" : "&nbsp;"}</span>`;
       setWalletHeadline(html);
       if (wTypingForward) {
         if (wIndex <= walletTypingText.length) {
           wIndex++;
-          setTimeout(typeWalletLine, 37);
+          setTimeout(typeWalletLine, 33);
         } else {
           wTypingForward = false;
           setTimeout(typeWalletLine, 900);
@@ -99,197 +99,187 @@ export default function WalletPage() {
       } else {
         if (wIndex >= 0) {
           wIndex--;
-          setTimeout(typeWalletLine, 18);
+          setTimeout(typeWalletLine, 17);
         } else {
           wTypingForward = true;
-          setTimeout(typeWalletLine, 550);
+          setTimeout(typeWalletLine, 540);
         }
       }
     }
-    let blinkInt = setInterval(() => {
-      wBlinkOn = !wBlinkOn;
-    }, 410);
+    let blinkInt = setInterval(() => { wBlinkOn = !wBlinkOn; }, 390);
     typeWalletLine();
-    return () => {
-      stopped = true;
-      clearInterval(blinkInt);
-    };
+    return () => { stopped = true; clearInterval(blinkInt); };
   }, []);
 
-  // Calculator logic (always uses live BNB price)
+  // Calculator
   const [calcValue, setCalcValue] = useState(100);
-  // Starting and launch prices per RA
-  const startPriceInr = 0.55;
-  const launchPriceInr = 15;
-  // Live USD/BNB per RA (live logic)
-  const startPriceUsd = bnbInr && bnbUsd ? (startPriceInr / bnbInr * bnbUsd) : 0.01;
-  const launchPriceUsd = bnbInr && bnbUsd ? (launchPriceInr / bnbInr * bnbUsd) : 0.17;
-  const startPriceBnb = bnbInr ? (startPriceInr / bnbInr) : 0.00001;
-  const launchPriceBnb = bnbInr ? (launchPriceInr / bnbInr) : 0.0003;
 
-  // Calculator outputs
-  const startRs = `₹${(calcValue * startPriceInr).toLocaleString(undefined, {maximumFractionDigits:2})}`;
-  const startUsd = `$${(calcValue * startPriceUsd).toLocaleString(undefined, {maximumFractionDigits:2})}`;
-  const startBnb = (calcValue * startPriceBnb).toFixed(5);
-  const launchRs = `₹${(calcValue * launchPriceInr).toLocaleString(undefined, {maximumFractionDigits:2})}`;
-  const launchUsd = `$${(calcValue * launchPriceUsd).toLocaleString(undefined, {maximumFractionDigits:2})}`;
-  const launchBnb = (calcValue * launchPriceBnb).toFixed(5);
+  // Presale logic (fixed rate)
+  const presaleRate = 1000; // 1000 RA ATUM per 0.01 BNB
+  const presaleBnbPerRa = 0.01 / presaleRate; // 0.00001 BNB per RA
+  const livePresalePrice = {
+    bnb: presaleBnbPerRa,
+    inr: bnbInr ? presaleBnbPerRa * bnbInr : 0,
+    usd: bnbUsd ? presaleBnbPerRa * bnbUsd : 0,
+  };
 
-  // --- STYLE for background and responsiveness
+  // Calculator "Starting/Launch" values (you may keep or hide these rows if you want)
+  // -- But we remove static price display as per your instruction --
+
+  // Responsive and pro design theme
   return (
     <>
-      <style>
-        {`
-          html, body, #root {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            background: #0e1018 !important;
-          }
-          body { min-height: 100vh !important; }
-          .wallet-main-bg {
-            min-height: 100vh;
-            background: #0e1018;
-            width: 100vw;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            justify-content: flex-start;
-          }
-          @media (max-width: 950px) {
-            .wallet-full-row {
-              flex-direction: column !important;
-              align-items: center !important;
-              gap: 18px !important;
-            }
-            .ra-logo-big { margin: 0 auto 14px auto !important; }
-          }
-          @media (max-width: 700px) {
-            .wallet-container, .wallet-calc-container {
-              max-width: 96vw !important;
-              min-width: unset !important;
-              width: 98vw !important;
-            }
-            .wallet-full-row { gap: 6vw !important; }
-          }
-          @media (max-width: 480px) {
-            .wallet-container, .wallet-calc-container {
-              padding: 12px 1vw 12px 1vw !important;
-            }
-            .ra-logo-big { width: 70vw !important; height: 70vw !important; min-width:60px !important; min-height:60px !important; max-width:150px !important; max-height:150px !important;}
-            .wallet-title { font-size: 1.06rem !important;}
-          }
-        `}
-      </style>
+      <style>{`
+        html, body, #root { background: #0c1221 !important; min-height: 100%; }
+        body { min-height: 100vh !important; }
+        .wallet-main-bg {
+          min-height: 100vh;
+          background: radial-gradient(circle at 45% 0%, #021227 0%, #152142 60%, #0c1221 100%);
+          width: 100vw;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: stretch;
+          justify-content: flex-start;
+        }
+        .wallet-glass {
+          background: rgba(10,16,40,0.88);
+          border: 2.5px solid #00f7ff55;
+          box-shadow: 0 0 26px #00b4fa55, 0 2px 24px #141a33, 0 0 0 1px #21e3fd44;
+          border-radius: 22px;
+          backdrop-filter: blur(3px);
+        }
+        .neon-shadow { box-shadow: 0 0 38px #23e6ff44, 0 0 0 7px #16192244; }
+        .wallet-headline {
+          font-size: 1.22em; text-align: center;
+          margin: 42px auto 40px auto;
+          background: linear-gradient(90deg,#fff 8%,#00f7ff 60%,#23e6ff 98%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          text-shadow: 0 2px 18px #00b4fa55,0 0 8px #00b4fa88,0 0 18px #00f7ff99;
+          filter: brightness(1.23) drop-shadow(0 0 3px #00e6ff99);
+          letter-spacing: 1.2px;
+          min-height: 1.7em;
+          font-family: 'Share Tech Mono', monospace;
+        }
+        .wallet-full-row {
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
+          gap: 48px;
+          padding: 0 0 12px 0;
+          max-width: 1250px;
+          margin: 0 auto 52px auto;
+          flex-wrap: nowrap;
+        }
+        @media (max-width: 1000px) {
+          .wallet-full-row { flex-direction: column; align-items: center; gap: 22px;}
+          .ra-logo-big { margin: 0 auto 14px auto !important; }
+        }
+        @media (max-width: 600px) {
+          .wallet-container, .wallet-calc-container { max-width: 97vw !important; width: 99vw !important;}
+          .wallet-full-row { gap: 6vw !important; }
+          .wallet-headline { font-size: 1em !important; }
+        }
+        @media (max-width: 460px) {
+          .wallet-container, .wallet-calc-container { padding: 10px 0vw 10px 0vw !important;}
+          .ra-logo-big { width: 54vw !important; height: 54vw !important; min-width:54px !important; min-height:54px !important; max-width:124px !important; max-height:124px !important;}
+          .wallet-title { font-size: 1.03rem !important;}
+        }
+        .live-presale-bar {
+          background: linear-gradient(90deg,#00f7ff44 50%, #23e6ff22 100%);
+          border: 2px solid #00f7ff;
+          border-radius: 12px;
+          margin-top: 21px;
+          margin-bottom: 7px;
+          padding: 13px 16px 9px 16px;
+          text-align: center;
+          font-size: 1.09em;
+          font-weight: bold;
+          color: #00f7ff;
+          text-shadow: 0 2px 10px #00f7ff88;
+          letter-spacing: .7px;
+          box-shadow: 0 2px 18px #00f7ff44;
+          font-family: 'Share Tech Mono', monospace;
+        }
+        .live-presale-bar span { color: #fff; font-weight: normal; }
+        .live-presale-bar .sub { color:#14e7ef; font-size: 0.93em; font-weight:normal;}
+      `}</style>
       <div className="wallet-main-bg">
         <div
           className="wallet-headline"
-          style={{
-            textAlign: "center",
-            marginTop: 38,
-            marginBottom: 35,
-            fontSize: "1.18em",
-            fontWeight: "bold",
-            textTransform: "uppercase",
-            background: "linear-gradient(90deg,#fff 8%,#00b4fa 60%,#23e6ff 98%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-            textShadow: "0 2px 18px #22213866,0 0 8px #00b4fa88,0 0 18px #00b4fa99",
-            filter: "brightness(1.15) drop-shadow(0 0 3px #00e6ff99)",
-            letterSpacing: "1.1px",
-            minHeight: "1.7em",
-          }}
           dangerouslySetInnerHTML={{ __html: walletHeadline }}
         />
-        <div
-          className="wallet-full-row"
-          style={{
-            display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "center",
-            gap: 44,
-            padding: "16px 0 0 0",
-            maxWidth: 1250,
-            margin: "0 auto 48px auto",
-            flexWrap: "nowrap",
-          }}
-        >
+        <div className="wallet-full-row">
+          {/* LOGO */}
           <img
             src="/RA-ATUM-LOGO.png"
             alt="RA Atum Logo"
-            className="ra-logo-big"
+            className="ra-logo-big neon-shadow"
             style={{
               width: 170,
               height: 170,
-              maxWidth: "35vw",
-              borderRadius: 35,
+              maxWidth: "36vw",
+              borderRadius: 40,
               objectFit: "contain",
-              background: "#191b2a",
-              boxShadow: "0 0 48px #00b4fa88, 0 0 0 7px #191a2477",
-              border: "3px solid #00b4fa44",
+              background: "#131f38",
+              border: "3px solid #00f7ff55",
               marginTop: 8,
               marginLeft: 8,
               display: "block",
-              transition: "transform .22s",
+              transition: "transform .21s",
             }}
           />
-          <div
-            className="wallet-container"
+
+          {/* WALLET BOX */}
+          <div className="wallet-container wallet-glass"
             style={{
-              background: "#181a1b",
-              borderRadius: 18,
-              boxShadow: "0 8px 32px #00b4fa33",
+              minWidth: 250,
               width: 320,
-              minWidth: 230,
-              margin: 0,
-              padding: "30px 22px 24px 22px",
-              border: "2.5px solid #00b4fa",
-              position: "relative",
+              padding: "32px 22px 24px 22px",
               zIndex: 2,
               fontFamily: "'Share Tech Mono', monospace",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-            }}
-          >
+            }}>
             <div
               className="wallet-title"
               style={{
-                fontSize: "1.33rem",
+                fontSize: "1.29rem",
                 letterSpacing: "1.4px",
                 fontWeight: "bold",
-                marginBottom: 16,
-                background: "linear-gradient(90deg, #fff 8%, #00b4fa 60%, #23e6ff 98%)",
+                marginBottom: 14,
+                background: "linear-gradient(90deg, #fff 8%, #00f7ff 60%, #23e6ff 98%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
-                textShadow: "0 2px 18px #22213866, 0 0 8px #00b4fa88, 0 0 18px #00b4fa99",
-                filter: "brightness(1.16) drop-shadow(0 0 3px #00e6ff99)",
+                textShadow: "0 2px 18px #00b4fa88",
+                filter: "brightness(1.16)",
                 textTransform: "uppercase",
                 textAlign: "center",
                 width: "100%",
-                marginTop: 10,
-              }}
-            >
+                marginTop: 7,
+              }}>
               <i className="fas fa-wallet"></i> WALLET OVERVIEW
             </div>
             {mounted && (
               <>
                 <button
                   style={{
-                    padding: "16px 34px",
-                    background: "linear-gradient(90deg, #0fffc7, #00c3ff)",
-                    color: "#11131a",
+                    padding: "15px 30px",
+                    background: "linear-gradient(90deg, #0fffc7, #00f7ff)",
+                    color: "#101c26",
                     border: "none",
                     borderRadius: "50px",
-                    fontSize: "1.2rem",
+                    fontSize: "1.14rem",
                     cursor: "pointer",
-                    marginBottom: 20,
+                    marginBottom: 19,
                     fontWeight: "bold",
-                    marginTop: 5,
+                    marginTop: 3,
+                    boxShadow: "0 0 16px #00f7ff44",
                   }}
                   onClick={open}
                 >
@@ -297,17 +287,18 @@ export default function WalletPage() {
                 </button>
                 <button
                   style={{
-                    padding: "13px 30px",
+                    padding: "12px 30px",
                     background: "linear-gradient(90deg, #ffd200, #00ffc6)",
-                    color: "#11131a",
+                    color: "#151c20",
                     border: "none",
                     borderRadius: "50px",
-                    fontSize: "1.14rem",
+                    fontSize: "1.1rem",
                     cursor: "pointer",
                     fontWeight: "bold",
-                    marginBottom: "16px",
-                    marginTop: "5px",
+                    marginBottom: "15px",
+                    marginTop: "3px",
                     width: "100%",
+                    boxShadow: "0 0 12px #ffd20022",
                   }}
                   onClick={() => window.location.href = "/presale"}
                 >
@@ -318,22 +309,19 @@ export default function WalletPage() {
                   className="wallet-address"
                   style={{
                     margin: "8px 0 17px 0",
-                    fontSize: "0.98rem",
-                    color: "#00b4fa",
-                    wordBreak: "break-all",
-                    letterSpacing: "0.6px",
-                    minHeight: 20,
-                    background: "#23243b",
+                    fontSize: "1.01rem",
+                    color: "#00f7ff",
+                    background: "#1c253f",
                     borderRadius: 7,
-                    padding: "6px 10px",
+                    padding: "7px 9px",
                     fontWeight: "bold",
-                    display: "inline-block",
                     boxShadow: "0 2px 16px #00b4fa33",
-                    border: "1.5px solid #00b4fa44",
+                    border: "1.5px solid #00f7ff33",
                     fontFamily: "'Share Tech Mono', monospace",
                     textAlign: "center",
                     width: "100%",
                     alignSelf: "center",
+                    letterSpacing: "0.65px",
                   }}
                 >
                   {isConnected && address
@@ -349,11 +337,11 @@ export default function WalletPage() {
                 justifyContent: "space-between",
                 width: "100%",
                 margin: "13px 0",
-                fontSize: "1.04rem",
+                fontSize: "1.05rem",
                 fontWeight: "bold",
                 color: "#e7d7b6",
-                borderBottom: "1px solid #202f38",
-                paddingBottom: 5,
+                borderBottom: "1px solid #222f38",
+                paddingBottom: 6,
               }}
             >
               <span>Token Balance</span>
@@ -368,11 +356,11 @@ export default function WalletPage() {
                 justifyContent: "space-between",
                 width: "100%",
                 margin: "13px 0",
-                fontSize: "1.04rem",
+                fontSize: "1.05rem",
                 fontWeight: "bold",
                 color: "#e7d7b6",
-                borderBottom: "1px solid #202f38",
-                paddingBottom: 5,
+                borderBottom: "1px solid #232f38",
+                paddingBottom: 6,
               }}
             >
               <span>Referral Earnings</span>
@@ -382,56 +370,56 @@ export default function WalletPage() {
               <div
                 style={{
                   marginTop: 8,
-                  fontSize: "0.97em",
+                  fontSize: "0.99em",
                   color: "#0fffc7",
-                  background: "#1f2430",
-                  padding: "6px 12px",
+                  background: "#182630",
+                  padding: "7px 11px",
                   borderRadius: "6px",
-                  border: "1px solid #00b4fa55",
+                  border: "1px solid #00f7ff55",
                   boxShadow: "0 0 10px #00b4fa22",
                   width: "100%",
                   textAlign: "center",
-                  letterSpacing: "1px",
+                  letterSpacing: "1.1px",
+                  marginBottom: 2,
                 }}
               >
                 1 BNB = ₹{bnbInr.toLocaleString()} / ${bnbUsd.toFixed(2)}
               </div>
             )}
           </div>
+
+          {/* CALCULATOR */}
           <div
-            className="wallet-calc-container"
+            className="wallet-calc-container wallet-glass"
             style={{
-              maxWidth: 400,
-              background: "#181a1b",
-              borderRadius: 18,
-              boxShadow: "0 8px 32px #00b4fa33",
-              border: "2.5px solid #00b4fa",
-              margin: 0,
-              padding: "28px 20px 22px 20px",
-              fontFamily: "'Share Tech Mono', monospace",
+              maxWidth: 410,
+              width: "100%",
               color: "#fff",
               textAlign: "center",
               zIndex: 2,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              minWidth: 270,
+              minWidth: 260,
+              padding: "30px 20px 22px 20px",
+              margin: 0,
             }}
           >
             <div
               className="calc-title-shine"
               style={{
-                fontSize: "1.13em",
+                fontSize: "1.15em",
                 fontWeight: "bold",
                 textTransform: "uppercase",
-                background: "linear-gradient(90deg, #fff 8%, #00b4fa 60%, #23e6ff 98%)",
+                background: "linear-gradient(90deg, #fff 8%, #00f7ff 60%, #23e6ff 98%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
-                textShadow: "0 2px 18px #22213866,0 0 8px #00b4fa88,0 0 18px #00b4fa99",
-                filter: "brightness(1.15) drop-shadow(0 0 3px #00e6ff99)",
-                letterSpacing: "1.1px",
-                marginBottom: 16,
+                textShadow: "0 2px 18px #00b4fa99",
+                filter: "brightness(1.15)",
+                letterSpacing: "1.14px",
+                marginBottom: 17,
+                fontFamily: "'Share Tech Mono', monospace",
               }}
             >
               CALCULATE THIS PROFIT
@@ -449,11 +437,11 @@ export default function WalletPage() {
               <label
                 htmlFor="calc-ra"
                 style={{
-                  color: "#00b4fa",
+                  color: "#00f7ff",
                   fontSize: "1em",
                   fontWeight: "bold",
-                  letterSpacing: ".3px",
-                  minWidth: 70,
+                  letterSpacing: ".4px",
+                  minWidth: 75,
                   textAlign: "right",
                 }}
               >
@@ -469,62 +457,45 @@ export default function WalletPage() {
                 onChange={(e) => setCalcValue(Number(e.target.value))}
                 style={{
                   borderRadius: 6,
-                  border: "1.5px solid #00b4fa77",
-                  background: "#222941",
+                  border: "1.7px solid #00f7ff77",
+                  background: "#202d48",
                   color: "#fff",
-                  padding: "8px 14px",
+                  padding: "9px 15px",
                   fontSize: "1em",
                   fontFamily: "'Share Tech Mono', monospace",
                   width: 120,
                   marginLeft: 8,
                   outline: "none",
+                  boxShadow: "0 1px 8px #00f7ff11",
                 }}
               />
             </div>
-            <table
-              className="calc-results-table"
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                margin: "14px 0 0 0",
-              }}
-            >
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>RS</th>
-                  <th>USD</th>
-                  <th>BNB</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Starting Price</td>
-                  <td id="rs-start">{startRs}</td>
-                  <td id="usd-start">{startUsd}</td>
-                  <td id="bnb-start">{startBnb}</td>
-                </tr>
-                <tr>
-                  <td>Launch Price</td>
-                  <td id="rs-launch">{launchRs}</td>
-                  <td id="usd-launch">{launchUsd}</td>
-                  <td id="bnb-launch">{launchBnb}</td>
-                </tr>
-              </tbody>
-            </table>
+
+            {/* -- Optionally, if you want to show a custom table with user calculation, add below -- */}
             <div
-              style={{
-                fontSize: "0.98em",
-                color: "#bda76a",
-                marginTop: 12,
-                letterSpacing: ".2px",
-              }}
+              className="live-presale-bar"
             >
-              Starting: ₹0.55 | ${bnbInr && bnbUsd ? startPriceUsd.toFixed(2) : "0.01"} | BNB {startPriceBnb.toFixed(5)}
-              <br />
-              Launch: ₹15 | ${bnbInr && bnbUsd ? launchPriceUsd.toFixed(2) : "0.17"} | BNB {launchPriceBnb.toFixed(5)}
+              <div>
+                <span style={{ color: "#0fffc7" }}>LIVE PRESALE PRICE:</span>
+                <br />
+                <span>
+                  1 RA ATUM = ₹{livePresalePrice.inr ? livePresalePrice.inr.toFixed(4) : "--"}
+                  {" | "}
+                  ${livePresalePrice.usd ? livePresalePrice.usd.toFixed(4) : "--"}
+                  {" | "}
+                  BNB {livePresalePrice.bnb.toFixed(5)}
+                </span>
+              </div>
+              <div style={{ fontSize: "0.97em", marginTop: 7 }}>
+                1000 RA ATUM = ₹{livePresalePrice.inr ? (livePresalePrice.inr * 1000).toFixed(2) : "--"}
+                {" | "}
+                ${livePresalePrice.usd ? (livePresalePrice.usd * 1000).toFixed(2) : "--"}
+                {" | "}
+                BNB {(livePresalePrice.bnb * 1000).toFixed(5)}
+              </div>
             </div>
-            <div className="calc-footer-space" style={{ minHeight: 38 }}></div>
+
+            <div className="calc-footer-space" style={{ minHeight: 24 }}></div>
           </div>
         </div>
         <div
@@ -541,19 +512,19 @@ export default function WalletPage() {
             href="https://ra-atum-website.vercel.app/"
             className="calc-footer-link"
             style={{
-              color: "#00b4fa",
-              marginTop: 28,
+              color: "#00f7ff",
+              marginTop: 26,
               display: "inline-block",
-              fontSize: "1.07em",
-              borderRadius: 7,
-              padding: "12px 36px",
-              background: "#23243b",
+              fontSize: "1.08em",
+              borderRadius: 8,
+              padding: "12px 38px",
+              background: "#1a2138",
               textDecoration: "none",
               transition: "background 0.14s, color 0.14s",
               fontFamily: "'Share Tech Mono', monospace",
-              border: "1.5px solid #00b4fa44",
+              border: "1.5px solid #00f7ff44",
               fontWeight: "bold",
-              boxShadow: "0 2px 10px #00b4fa22",
+              boxShadow: "0 2px 14px #00f7ff22",
             }}
           >
             <i className="fas fa-arrow-left"></i> Back to Home
