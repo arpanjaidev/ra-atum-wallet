@@ -117,16 +117,20 @@ export default function WalletPage() {
   // Presale logic (fixed rate)
   const presaleRate = 1000; // 1000 RA ATUM per 0.01 BNB
   const presaleBnbPerRa = 0.01 / presaleRate; // 0.00001 BNB per RA
+
+  // Calculate live price for 1 RA and for the entered amount
   const livePresalePrice = {
     bnb: presaleBnbPerRa,
     inr: bnbInr ? presaleBnbPerRa * bnbInr : 0,
     usd: bnbUsd ? presaleBnbPerRa * bnbUsd : 0,
   };
+  const calcCount = !calcValue || isNaN(calcValue) ? 0 : Number(calcValue);
+  const livePresaleTotal = {
+    bnb: (livePresalePrice.bnb * calcCount),
+    inr: (livePresalePrice.inr * calcCount),
+    usd: (livePresalePrice.usd * calcCount),
+  };
 
-  // Calculator "Starting/Launch" values (you may keep or hide these rows if you want)
-  // -- But we remove static price display as per your instruction --
-
-  // Responsive and pro design theme
   return (
     <>
       <style>{`
@@ -470,11 +474,7 @@ export default function WalletPage() {
                 }}
               />
             </div>
-
-            {/* -- Optionally, if you want to show a custom table with user calculation, add below -- */}
-            <div
-              className="live-presale-bar"
-            >
+            <div className="live-presale-bar">
               <div>
                 <span style={{ color: "#0fffc7" }}>LIVE PRESALE PRICE:</span>
                 <br />
@@ -487,14 +487,19 @@ export default function WalletPage() {
                 </span>
               </div>
               <div style={{ fontSize: "0.97em", marginTop: 7 }}>
-                1000 RA ATUM = ₹{livePresalePrice.inr ? (livePresalePrice.inr * 1000).toFixed(2) : "--"}
-                {" | "}
-                ${livePresalePrice.usd ? (livePresalePrice.usd * 1000).toFixed(2) : "--"}
-                {" | "}
-                BNB {(livePresalePrice.bnb * 1000).toFixed(5)}
+                {calcCount > 0 ? (
+                  <>
+                    {calcCount} RA ATUM = ₹{livePresaleTotal.inr ? livePresaleTotal.inr.toFixed(2) : "--"}
+                    {" | "}
+                    ${livePresaleTotal.usd ? livePresaleTotal.usd.toFixed(2) : "--"}
+                    {" | "}
+                    BNB {livePresaleTotal.bnb.toFixed(5)}
+                  </>
+                ) : (
+                  "—"
+                )}
               </div>
             </div>
-
             <div className="calc-footer-space" style={{ minHeight: 24 }}></div>
           </div>
         </div>
