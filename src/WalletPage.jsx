@@ -136,32 +136,34 @@ export default function WalletPage() {
         html, body, #root {
           min-height: 100vh !important;
           height: 100% !important;
-          width: 100% !important;
+          width: 100vw !important;
           margin: 0 !important;
           padding: 0 !important;
-          background: #0c1221 !important;
-          overflow-x: hidden !important;
+          background: none !important;
         }
         body {
           min-height: 100vh !important;
           height: 100% !important;
-          width: 100% !important;
+          width: 100vw !important;
         }
         #root {
           min-height: 100vh !important;
           height: 100% !important;
-          width: 100% !important;
+          width: 100vw !important;
         }
         .wallet-main-bg {
           min-height: 100vh;
-          width: 100%;
+          height: 100vh;
+          width: 100vw;
           margin: 0;
           padding: 0;
           display: flex;
           flex-direction: column;
           align-items: stretch;
           justify-content: flex-start;
-          background: #0c1221 !important;
+          background: url('/a0946167-a4a3-4346-b14b-0dc9455c795f.png') no-repeat center center fixed;
+          background-size: cover;
+          background-position: center;
         }
         .wallet-glass {
           background: rgba(10,16,40,0.88);
@@ -192,27 +194,21 @@ export default function WalletPage() {
           padding: 0 0 12px 0;
           max-width: 1250px;
           margin: 0 auto 52px auto;
-          width: 100%;
           flex-wrap: nowrap;
         }
-        .wallet-container, .wallet-calc-container {
-          max-width: 420px;
-          width: 100%;
-          margin: 0 auto;
-        }
         @media (max-width: 1000px) {
-          .wallet-full-row { flex-direction: column; align-items: center; gap: 22px; }
+          .wallet-full-row { flex-direction: column; align-items: center; gap: 22px;}
           .ra-logo-big { margin: 0 auto 14px auto !important; }
         }
         @media (max-width: 600px) {
-          .wallet-container, .wallet-calc-container { max-width: 97vw !important; width: 99vw !important; }
+          .wallet-container, .wallet-calc-container { max-width: 97vw !important; width: 99vw !important;}
           .wallet-full-row { gap: 6vw !important; }
           .wallet-headline { font-size: 1em !important; }
         }
         @media (max-width: 460px) {
-          .wallet-container, .wallet-calc-container { padding: 10px 0vw 10px 0vw !important; }
+          .wallet-container, .wallet-calc-container { padding: 10px 0vw 10px 0vw !important;}
           .ra-logo-big { width: 54vw !important; height: 54vw !important; min-width:54px !important; min-height:54px !important; max-width:124px !important; max-height:124px !important;}
-          .wallet-title { font-size: 1.03rem !important; }
+          .wallet-title { font-size: 1.03rem !important;}
         }
         .live-presale-bar {
           background: linear-gradient(90deg,#00f7ff44 50%, #23e6ff22 100%);
