@@ -24,10 +24,9 @@ const tokenABI = [
 ];
 
 export default function WalletPage() {
-  // For BNB Price
+  // --- Live BNB price fetch
   const [bnbUsd, setBnbUsd] = useState(null);
   const [bnbInr, setBnbInr] = useState(null);
-
   useEffect(() => {
     async function fetchBNBPrice() {
       try {
@@ -47,11 +46,9 @@ export default function WalletPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Wallet states and logic
+  // --- Wallet logic
   const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => setMounted(true), []);
   const { open } = useWeb3Modal();
   const { address, isConnected } = useAccount();
   const { data: decimals } = useReadContract({
@@ -78,7 +75,7 @@ export default function WalletPage() {
   }
   const referralEarnings = isConnected ? "0.00" : "–";
 
-  // Typing Headline effect
+  // --- Typing effect headline
   const [walletHeadline, setWalletHeadline] = useState("");
   const walletTypingText = "JOIN RA ATUM TO SHAPE THE FUTURE OF BLOCKCHAIN-POWERED KINDNESS.";
   useEffect(() => {
@@ -92,267 +89,289 @@ export default function WalletPage() {
       if (wTypingForward) {
         if (wIndex <= walletTypingText.length) {
           wIndex++;
-          setTimeout(typeWalletLine, 37);
+          setTimeout(typeWalletLine, 32);
         } else {
           wTypingForward = false;
-          setTimeout(typeWalletLine, 950);
+          setTimeout(typeWalletLine, 900);
         }
       } else {
         if (wIndex >= 0) {
           wIndex--;
-          setTimeout(typeWalletLine, 18);
+          setTimeout(typeWalletLine, 15);
         } else {
           wTypingForward = true;
-          setTimeout(typeWalletLine, 400);
+          setTimeout(typeWalletLine, 500);
         }
       }
     }
-    let blinkInt = setInterval(() => { wBlinkOn = !wBlinkOn; }, 410);
+    let blinkInt = setInterval(() => { wBlinkOn = !wBlinkOn; }, 380);
     typeWalletLine();
     return () => { stopped = true; clearInterval(blinkInt); };
   }, []);
 
-  // --- LIVE PRESALE CALCULATOR ---
-  // Each RA = 0.00001 BNB (fixed by contract, live BNB price for INR/USD calc)
-  const [calcValue, setCalcValue] = useState(1000); // default 1000
-  const presaleBnbPerRa = 0.00001;
+  // --- Calculator
+  const [calcValue, setCalcValue] = useState(1000);
   const livePresalePrice = {
-    inr: bnbInr ? presaleBnbPerRa * bnbInr : 0,
-    usd: bnbUsd ? presaleBnbPerRa * bnbUsd : 0,
-    bnb: presaleBnbPerRa
+    inr: bnbInr ? (0.01 * bnbInr).toFixed(4) : "0.0000",
+    usd: bnbUsd ? (0.01 * bnbUsd).toFixed(4) : "0.0000",
+    bnb: 0.00001,
   };
-  // User-entered value price
-  const userRa = Number(calcValue) > 0 ? Number(calcValue) : 1;
+  const userRa = calcValue || 1;
   const userPresalePrice = {
-    inr: livePresalePrice.inr * userRa,
-    usd: livePresalePrice.usd * userRa,
-    bnb: livePresalePrice.bnb * userRa
+    inr: bnbInr ? (userRa * 0.01 * bnbInr).toFixed(2) : "0.00",
+    usd: bnbUsd ? (userRa * 0.01 * bnbUsd).toFixed(2) : "0.00",
+    bnb: (userRa * 0.00001).toFixed(5),
   };
 
   return (
     <>
       <style>
         {`
-          body, #root, html {
-            background: url('https://i.pinimg.com/1200x/52/50/a6/5250a6ebb1739452d85599607b904ced.jpg') center center no-repeat !important;
-            background-size: cover !important;
-            min-height: 100vh !important;
-          }
-          .wallet-main-bg {
-            min-height: 100vh;
-            width: 100vw;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            justify-content: flex-start;
-            background: none !important;
-          }
-          .wallet-full-row {
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            gap: 48px;
-            max-width: 1200px;
-            margin: 0 auto 48px auto;
-            flex-wrap: wrap;
-            z-index: 2;
-          }
-          .wallet-container, .wallet-calc-container {
-            background: rgba(13,18,35, 0.90);
-            border-radius: 18px;
-            box-shadow: 0 8px 40px #00f7ff22, 0 0 0 2px #17fff977;
-            border: 2.5px solid #0fffc777;
-            padding: 36px 24px 22px 24px;
-            font-family: 'Share Tech Mono', monospace;
-            margin-top: 20px;
-            min-width: 320px;
-            max-width: 390px;
-          }
-          .wallet-container {
-            align-items: center;
-          }
-          .ra-logo-big {
-            width: 170px;
-            height: 170px;
-            border-radius: 35px;
-            object-fit: contain;
-            background: #1e2337;
-            box-shadow: 0 0 64px #00f7ff55, 0 0 0 9px #10151b;
-            border: 3px solid #00f7ff77;
-            margin: 0 0 18px 0;
-            display: block;
-            transition: transform .22s;
-          }
-          .wallet-title {
-            font-size: 1.33rem;
-            letter-spacing: 1.4px;
-            font-weight: bold;
-            margin-bottom: 16px;
-            background: linear-gradient(90deg, #fff 8%, #00f7ff 60%, #23e6ff 98%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 2px 18px #22213866, 0 0 8px #0fffc7aa, 0 0 18px #00f7ff99;
-            filter: brightness(1.16) drop-shadow(0 0 3px #00f7ff99);
-            text-transform: uppercase;
-            text-align: center;
-            width: 100%;
-            margin-top: 10px;
-          }
-          .wallet-headline {
-            text-align: center;
-            margin-top: 38px;
-            margin-bottom: 35px;
-            font-size: 1.18em;
-            font-weight: bold;
-            text-transform: uppercase;
-            background: linear-gradient(90deg,#fff 8%,#00b4fa 60%,#23e6ff 98%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 2px 18px #22213866,0 0 8px #00b4fa88,0 0 18px #00b4fa99;
-            filter: brightness(1.15) drop-shadow(0 0 3px #00e6ff99);
-            letter-spacing: 1.1px;
-            min-height: 1.7em;
-          }
-          .wallet-address {
-            margin: 8px 0 17px 0;
-            font-size: 1.03rem;
-            color: #0fffc7;
-            background: #191e34;
-            border-radius: 8px;
-            padding: 7px 11px;
-            font-weight: bold;
-            box-shadow: 0 2px 18px #00f7ff33;
-            border: 1.5px solid #00f7ff44;
-            text-align: center;
-            width: 100%;
-            align-self: center;
-            letter-spacing: 0.7px;
-          }
-          .wallet-info-row {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            margin: 13px 0;
-            font-size: 1.09rem;
-            font-weight: bold;
-            color: #e7d7b6;
-            border-bottom: 1px solid #222f38;
-            padding-bottom: 7px;
-          }
-          .wallet-glass-btn, .wallet-buy-btn {
-            font-family: 'Share Tech Mono', monospace;
-            border: none;
-            border-radius: 50px;
-            padding: 18px 36px;
-            margin-bottom: 19px;
-            margin-top: 7px;
-            width: 95%;
-            font-size: 1.15rem;
-            font-weight: bold;
-            box-shadow: 0 0 38px #00f7ff44, 0 0 0 5px #2225;
-            cursor: pointer;
-            transition: background 0.17s, color 0.17s, box-shadow 0.17s, transform 0.14s;
-            outline: none;
-            letter-spacing: 1px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-          }
-          .wallet-glass-btn {
-            background: linear-gradient(90deg, #0fffc7 15%, #00f7ff 100%);
-            color: #161a20;
-            border: 2px solid #0fffc777;
-            text-shadow: 0 1px 4px #fff6;
-          }
-          .wallet-glass-btn:hover {
-            background: #fff;
-            color: #00d4c1;
-            transform: scale(1.04);
-            box-shadow: 0 0 44px #00f7ff66;
-          }
-          .wallet-buy-btn {
-            background: linear-gradient(95deg, #ffd200 5%, #00ffc6 100%);
-            color: #161a20;
-            border: 2px solid #00ffc688;
-            text-shadow: 0 1px 4px #fff9;
-            margin-top: 0;
-            margin-bottom: 18px;
-          }
-          .wallet-buy-btn:hover {
-            background: #fff;
-            color: #09bbab;
-            transform: scale(1.04);
-            box-shadow: 0 0 44px #00ffc644;
-          }
-          .live-presale-bar {
-            background: rgba(16,36,66, 0.88);
-            border: 2px solid #0fffc7cc;
-            box-shadow: 0 0 30px #0fffc766, 0 0 0 4px #19345e99;
-            border-radius: 15px;
-            padding: 19px 12px 13px 12px;
-            margin: 21px 0 0 0;
-            font-size: 1.09em;
-            color: #0fffc7;
-            font-family: 'Share Tech Mono', monospace;
-            font-weight: bold;
-            letter-spacing: 0.8px;
-            text-align: center;
-          }
-          .calc-row label {
-            color: #0fffc7;
-            font-size: 1.09em;
-            font-weight: bold;
-            letter-spacing: .4px;
-            min-width: 82px;
-            text-align: right;
-          }
-          .calc-input {
-            border-radius: 7px;
-            border: 1.9px solid #0fffc7bb;
-            background: #202d48;
-            color: #fff;
-            padding: 10px 16px;
-            font-size: 1em;
-            font-family: 'Share Tech Mono', monospace;
-            width: 120px;
-            margin-left: 10px;
-            outline: none;
-            box-shadow: 0 1px 8px #0fffc711;
-            transition: border .15s, box-shadow .13s;
-          }
-          .calc-input:focus {
-            border-color: #ffd200;
-            box-shadow: 0 0 8px #ffd20066;
-          }
-          @media (max-width: 950px) {
-            .wallet-full-row { flex-direction: column !important; align-items: center !important; gap: 24px !important; }
-            .ra-logo-big { margin: 0 auto 14px auto !important; }
-          }
-          @media (max-width: 650px) {
-            .wallet-container, .wallet-calc-container {
-              max-width: 97vw !important;
-              min-width: unset !important;
-              width: 97vw !important;
-              padding: 17px 4vw 17px 4vw !important;
-            }
-            .wallet-full-row { gap: 4vw !important; }
-            .wallet-main-bg { padding: 0 !important; }
-            .wallet-headline { font-size: 1em !important; }
-          }
-          @media (max-width: 440px) {
-            .wallet-container, .wallet-calc-container { padding: 11px 1vw 11px 1vw !important;}
-            .ra-logo-big { width: 60vw !important; height: 60vw !important; min-width:58px !important; min-height:58px !important; max-width:110px !important; max-height:110px !important;}
-            .wallet-title { font-size: 1em !important;}
-          }
+        html, body, #root {
+          min-height: 100vh !important;
+          margin: 0; padding: 0;
+          background: #050b12;
+        }
+        body {
+          background: url('https://i.pinimg.com/1200x/52/50/a6/5250a6ebb1739452d85599607b904ced.jpg') no-repeat center center fixed !important;
+          background-size: cover !important;
+          min-height: 100vh !important;
+        }
+        .wallet-main-bg {
+          min-height: 100vh;
+          width: 100vw;
+          padding: 40px 0 0 0;
+          display: flex;
+          flex-direction: column;
+          align-items: stretch;
+          justify-content: flex-start;
+        }
+        .wallet-headline {
+          text-shadow: 0 0 22px #0fffc777, 0 2px 16px #00b4fa44;
+        }
+        .wallet-full-row {
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
+          gap: 38px;
+          margin: 0 auto 48px auto;
+          max-width: 1300px;
+          width: 100%;
+          flex-wrap: wrap;
+        }
+        .wallet-container, .wallet-calc-container {
+          background: rgba(9,19,28,0.92);
+          border-radius: 18px;
+          box-shadow: 0 8px 40px #00f7ff33, 0 1.5px 0 #0fffc766;
+          border: 2.5px solid #0fffc7;
+          padding: 32px 22px 22px 22px;
+          min-width: 320px;
+          width: 390px;
+          max-width: 98vw;
+          font-family: 'Share Tech Mono', monospace;
+          position: relative;
+          z-index: 3;
+        }
+        .wallet-container { margin-bottom: 30px;}
+        .wallet-calc-container { margin-bottom: 30px;}
+        .ra-logo-big {
+          width: 160px; height: 160px;
+          border-radius: 35px;
+          object-fit: contain;
+          background: #191b2a;
+          box-shadow: 0 0 48px #00b4fa88, 0 0 0 7px #191a2477;
+          border: 3px solid #00b4fa44;
+          margin: 0 0 22px 0;
+          display: block;
+          transition: transform .22s;
+        }
+        .wallet-title {
+          font-size: 1.27rem;
+          letter-spacing: 1.4px;
+          font-weight: bold;
+          margin-bottom: 18px;
+          background: linear-gradient(90deg, #fff 8%, #0fffc7 60%, #23e6ff 98%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          text-shadow: 0 2px 18px #22213866, 0 0 8px #00b4fa88, 0 0 18px #00b4fa99;
+          filter: brightness(1.16) drop-shadow(0 0 3px #00e6ff99);
+          text-transform: uppercase;
+          text-align: center;
+          width: 100%;
+          margin-top: 10px;
+        }
+        .neon-btn, .neon-btn:focus {
+          padding: 16px 34px;
+          background: linear-gradient(90deg, #0fffc7, #00c3ff 98%);
+          color: #0b1834;
+          border: none;
+          border-radius: 50px;
+          font-size: 1.2rem;
+          cursor: pointer;
+          font-weight: bold;
+          margin-bottom: 22px;
+          margin-top: 5px;
+          width: 100%;
+          transition: all .18s;
+          box-shadow: 0 0 24px #0fffc755, 0 3px 16px #00b4fa33;
+          outline: none;
+        }
+        .neon-btn.buy {
+          background: linear-gradient(90deg, #ffd200, #00ffc6 98%);
+          color: #05212d;
+          margin-bottom: 18px;
+          font-size: 1.15rem;
+          border-radius: 44px;
+          font-weight: 900;
+        }
+        .neon-btn:hover, .neon-btn:active {
+          background: #222a47;
+          color: #0fffc7;
+          box-shadow: 0 0 40px #0fffc7, 0 2px 26px #23e6ff55;
+          transform: scale(1.045);
+        }
+        .wallet-address {
+          font-size: 1rem;
+          color: #0fffc7;
+          word-break: break-all;
+          letter-spacing: 0.7px;
+          background: #171e2c;
+          border-radius: 7px;
+          padding: 7px 12px;
+          font-weight: bold;
+          box-shadow: 0 2px 16px #00b4fa33;
+          border: 1.5px solid #00f7ff44;
+          font-family: 'Share Tech Mono', monospace;
+          text-align: center;
+          width: 100%;
+          align-self: center;
+          overflow-x: auto;
+          white-space: nowrap;
+          margin-bottom: 10px;
+        }
+        .wallet-info-row {
+          display: flex;
+          justify-content: space-between;
+          width: 100%;
+          margin: 11px 0 11px 0;
+          font-size: 1.09rem;
+          font-weight: bold;
+          color: #e7d7b6;
+          border-bottom: 1px solid #28354a;
+          padding-bottom: 4px;
+        }
+        .wallet-bnb-line {
+          margin-top: 13px;
+          font-size: 1.03em;
+          color: #0fffc7;
+          background: #171e2c;
+          padding: 8px 7px;
+          border-radius: 6px;
+          border: 1.5px solid #00f7ff55;
+          box-shadow: 0 0 10px #00f7ff22;
+          width: 100%;
+          text-align: center;
+          letter-spacing: 1px;
+          overflow-x: auto;
+          white-space: nowrap;
+          font-family: 'Share Tech Mono', monospace;
+        }
+        .calc-title-shine {
+          font-size: 1.16em;
+          font-weight: bold;
+          text-transform: uppercase;
+          background: linear-gradient(90deg, #fff 8%, #0fffc7 60%, #23e6ff 98%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          text-shadow: 0 2px 18px #22213866,0 0 8px #00b4fa88,0 0 18px #00b4fa99;
+          filter: brightness(1.17) drop-shadow(0 0 3px #0fffc7bb);
+          letter-spacing: 1.12px;
+          margin-bottom: 18px;
+        }
+        .calc-row {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          margin-bottom: 14px;
+        }
+        .calc-row label {
+          color: #0fffc7;
+          font-size: 1.12em;
+          font-weight: 700;
+          min-width: 120px;
+          text-align: right;
+        }
+        .calc-input {
+          border-radius: 8px;
+          border: 2px solid #0fffc799;
+          background: #171e2c;
+          color: #fff;
+          padding: 8px 16px;
+          font-size: 1.17em;
+          font-family: 'Share Tech Mono', monospace;
+          width: 100px;
+          outline: none;
+          font-weight: 700;
+          box-shadow: 0 0 8px #0fffc733;
+          text-align: right;
+          transition: border .17s;
+        }
+        .calc-input:focus {
+          border: 2.5px solid #0fffc7;
+          box-shadow: 0 0 0 2px #0fffc7, 0 0 18px #0fffc766;
+        }
+        .live-presale-bar {
+          margin: 0 auto 0 auto;
+          margin-top: 10px;
+          background: #101c25;
+          border-radius: 15px;
+          padding: 21px 12px 18px 12px;
+          color: #0fffc7;
+          font-weight: 800;
+          font-size: 1.15em;
+          box-shadow: 0 0 28px #0fffc726, 0 0 0 2px #0fffc733;
+          border: 2.2px solid #0fffc7cc;
+          min-width: 230px;
+          width: 100%;
+          max-width: 350px;
+          text-align: left;
+          font-family: 'Share Tech Mono', monospace;
+          line-height: 1.55em;
+          letter-spacing: 1.2px;
+        }
+        @media (max-width: 850px) {
+          .wallet-full-row { flex-direction: column; align-items: center; gap: 24px; }
+          .wallet-container, .wallet-calc-container { width: 97vw; min-width: unset; max-width: 97vw;}
+        }
+        @media (max-width: 600px) {
+          .wallet-container, .wallet-calc-container { padding: 18px 4vw 18px 4vw; }
+          .wallet-headline { font-size: 0.92em !important; }
+          .live-presale-bar { max-width: 98vw; font-size: 1em; }
+        }
         `}
       </style>
       <div className="wallet-main-bg">
         <div
           className="wallet-headline"
+          style={{
+            textAlign: "center",
+            marginTop: 18,
+            marginBottom: 28,
+            fontSize: "1.13em",
+            fontWeight: "bold",
+            textTransform: "uppercase",
+            background: "linear-gradient(90deg,#fff 8%,#0fffc7 60%,#23e6ff 98%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+            textShadow: "0 2px 18px #22213866,0 0 8px #0fffc799",
+            filter: "brightness(1.13) drop-shadow(0 0 2px #0fffc777)",
+            letterSpacing: "1.12px",
+            minHeight: "1.6em",
+          }}
           dangerouslySetInnerHTML={{ __html: walletHeadline }}
         />
         <div className="wallet-full-row">
@@ -367,17 +386,10 @@ export default function WalletPage() {
             </div>
             {mounted && (
               <>
-                <button
-                  className="wallet-glass-btn"
-                  onClick={open}
-                >
-                  <i className="fas fa-plug"></i>{" "}
+                <button className="neon-btn" onClick={open}>
                   {isConnected ? "Connected" : "Connect Wallet"}
                 </button>
-                <button
-                  className="wallet-buy-btn"
-                  onClick={() => window.location.href = "/presale"}
-                >
+                <button className="neon-btn buy" onClick={() => window.location.href = "/presale"}>
                   <i className="fa-solid fa-bolt"></i> Buy RA Atum Token
                 </button>
                 <div className="wallet-address">
@@ -398,83 +410,62 @@ export default function WalletPage() {
               <span id="referral-earnings">{referralEarnings}</span>
             </div>
             {bnbUsd && bnbInr && (
-              <div
-                style={{
-                  marginTop: 8,
-                  fontSize: "1em",
-                  color: "#0fffc7",
-                  background: "#181e34",
-                  padding: "7px 14px",
-                  borderRadius: "7px",
-                  border: "1.2px solid #00f7ff44",
-                  boxShadow: "0 0 10px #00f7ff22",
-                  width: "100%",
-                  textAlign: "center",
-                  letterSpacing: "1px",
-                  marginBottom: "3px"
-                }}
-              >
+              <div className="wallet-bnb-line">
                 1 BNB = ₹{bnbInr.toLocaleString()} / ${bnbUsd.toFixed(2)}
               </div>
             )}
           </div>
           <div className="wallet-calc-container">
-            <div
-              className="calc-title-shine"
-              style={{
-                fontSize: "1.16em",
-                fontWeight: "bold",
-                textTransform: "uppercase",
-                background: "linear-gradient(90deg, #fff 8%, #0fffc7 60%, #23e6ff 98%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-                textShadow: "0 2px 18px #22213866,0 0 8px #00b4fa88,0 0 18px #00b4fa99",
-                filter: "brightness(1.17) drop-shadow(0 0 3px #0fffc7bb)",
-                letterSpacing: "1.12px",
-                marginBottom: 18,
-              }}
-            >
+            <div className="calc-title-shine">
               CALCULATE <span style={{ color: "#0fffc7" }}>THIS PROFIT</span>
             </div>
-            <div className="calc-row" style={{
-              display: "flex", alignItems: "center", justifyContent: "center",
-              gap: 10, marginBottom: 14
-            }}>
-              <label htmlFor="calc-ra">Enter RA ATUM</label>
+            <div className="calc-row">
+              <label htmlFor="calc-ra">
+                Enter <span style={{ color: "#0fffc7" }}>RA ATUM</span>
+              </label>
               <input
                 id="calc-ra"
                 className="calc-input"
                 type="number"
                 min="1"
-                step="1"
                 placeholder="1000"
-                value={calcValue}
-                onChange={(e) => {
-                  const v = e.target.value.replace(/^0+/, "");
-                  setCalcValue(v === "" ? 1 : Number(v));
-                }}
-                onWheel={e => e.target.blur()}
-                style={{ fontWeight: "bold" }}
+                value={calcValue === 0 ? "" : calcValue}
+                onChange={(e) =>
+                  setCalcValue(
+                    isNaN(Number(e.target.value)) || Number(e.target.value) < 1
+                      ? 1
+                      : Number(e.target.value)
+                  )
+                }
               />
             </div>
-            {/* Live Presale Price Bar */}
             <div className="live-presale-bar">
-              LIVE PRESALE PRICE:
-              <br />
-              <span style={{ color: "#fff", fontWeight: 700 }}>
-                1 RA ATUM = ₹{livePresalePrice.inr.toFixed(4)} | ${livePresalePrice.usd.toFixed(4)} | BNB {livePresalePrice.bnb.toFixed(5)}
-              </span>
-              <br />
-              <span style={{ color: "#0fffc7", fontWeight: 700, letterSpacing: 1.2 }}>
-                {userRa} RA ATUM = ₹{userPresalePrice.inr.toLocaleString(undefined, { maximumFractionDigits: 2 })} | ${userPresalePrice.usd.toLocaleString(undefined, { maximumFractionDigits: 2 })} | BNB {userPresalePrice.bnb.toFixed(5)}
-              </span>
+              <div>
+                <span style={{ color: "#0fffc7", fontWeight: 900, fontSize: "1.02em" }}>
+                  LIVE PRESALE PRICE:
+                </span>
+                <br />
+                <span style={{ color: "#fff" }}>
+                  1 RA ATUM = ₹{Number(livePresalePrice.inr).toLocaleString(undefined, { maximumFractionDigits: 4 })}
+                  {" | $"}
+                  {Number(livePresalePrice.usd).toLocaleString(undefined, { maximumFractionDigits: 4 })}
+                  {" | BNB "}
+                  {livePresalePrice.bnb.toFixed(5)}
+                </span>
+                <br />
+                <span style={{ color: "#0fffc7" }}>
+                  {userRa} RA ATUM = ₹{Number(userPresalePrice.inr).toLocaleString(undefined, { maximumFractionDigits: 2 })}{" "}
+                  | ${Number(userPresalePrice.usd).toLocaleString(undefined, { maximumFractionDigits: 2 })}{" "}
+                  | BNB {userPresalePrice.bnb}
+                </span>
+              </div>
             </div>
           </div>
         </div>
+        {/* Spacer or nav below */}
         <div
           style={{
-            margin: "0 auto 32px auto",
+            margin: "0 auto 36px auto",
             textAlign: "center",
             width: "100%",
             display: "flex",
@@ -483,19 +474,19 @@ export default function WalletPage() {
         >
           <a
             href="https://ra-atum-website.vercel.app/"
+            className="calc-footer-link"
             style={{
               color: "#0fffc7",
               marginTop: 28,
               display: "inline-block",
               fontSize: "1.07em",
               borderRadius: 7,
-              padding: "12px 36px",
-              background: "#171e2cbb",
+              padding: "11px 33px",
+              background: "#141f28cc",
               textDecoration: "none",
-              fontFamily: "'Share Tech Mono', monospace",
-              border: "1.5px solid #00f7ff44",
+              border: "1.7px solid #0fffc788",
               fontWeight: "bold",
-              boxShadow: "0 2px 10px #00f7ff22",
+              boxShadow: "0 2px 10px #00b4fa22",
             }}
           >
             <i className="fas fa-arrow-left"></i> Back to Home
