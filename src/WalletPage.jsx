@@ -4,6 +4,9 @@ import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount, useReadContract } from "wagmi";
 import { formatUnits } from "viem";
 
+// ⬇️ add this import
+import ReferralCard from "./components/ReferralCard";
+
 // Token setup
 const tokenAddress = "0xcE06aDbB070c2f0d90Ba109E77c0c2Ff83F9Ff3A";
 const tokenABI = [
@@ -48,7 +51,9 @@ export default function WalletPage() {
 
   // Wallet states and logic
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const { open } = useWeb3Modal();
   const { address, isConnected } = useAccount();
   const { data: decimals } = useReadContract({
@@ -68,23 +73,31 @@ export default function WalletPage() {
   if (isConnected) {
     if (balanceLoading || decimals === undefined) tokenBalance = "Fetching...";
     else if (rawBalance)
-      tokenBalance = parseFloat(formatUnits(rawBalance, decimals)).toLocaleString(undefined, {
+      tokenBalance = parseFloat(
+        formatUnits(rawBalance, decimals)
+      ).toLocaleString(undefined, {
         maximumFractionDigits: 4,
       });
     else tokenBalance = "0";
   }
-  const referralEarnings = isConnected ? "0.00" : "–";
+  const referralEarnings = isConnected ? "0.00" : "–"; // (ReferralCard shows real stats)
 
   // Typing Headline effect
   const [walletHeadline, setWalletHeadline] = useState("");
-  const walletTypingText = "JOIN RA ATUM TO SHAPE THE FUTURE OF BLOCKCHAIN-POWERED KINDNESS.";
+  const walletTypingText =
+    "JOIN RA ATUM TO SHAPE THE FUTURE OF BLOCKCHAIN-POWERED KINDNESS.";
   useEffect(() => {
-    let wIndex = 0, wTypingForward = true, wBlinkOn = true, stopped = false;
+    let wIndex = 0,
+      wTypingForward = true,
+      wBlinkOn = true,
+      stopped = false;
     function typeWalletLine() {
       if (stopped) return;
       let html =
         walletTypingText.substring(0, wIndex) +
-        `<span style="color:#00b4fa;font-weight:bold;font-size:1.15em;">${wBlinkOn ? "|" : "&nbsp;"}</span>`;
+        `<span style="color:#00b4fa;font-weight:bold;font-size:1.15em;">${
+          wBlinkOn ? "|" : "&nbsp;"
+        }</span>`;
       setWalletHeadline(html);
       if (wTypingForward) {
         if (wIndex <= walletTypingText.length) {
@@ -126,21 +139,42 @@ export default function WalletPage() {
     usd: bnbUsd ? presaleBnbPerRa * bnbUsd : 0,
   };
 
-  // (If you want to keep the calculator, otherwise remove the next block)
   // Starting and launch prices per RA
   const startPriceInr = 0.55;
   const launchPriceInr = 15;
-  // Live USD/BNB per RA (live logic)
-  const startPriceUsd = bnbInr && bnbUsd ? (startPriceInr / bnbInr * bnbUsd) : 0.01;
-  const launchPriceUsd = bnbInr && bnbUsd ? (launchPriceInr / bnbInr * bnbUsd) : 0.17;
-  const startPriceBnb = bnbInr ? (startPriceInr / bnbInr) : 0.00001;
-  const launchPriceBnb = bnbInr ? (launchPriceInr / bnbInr) : 0.0003;
-  const startRs = `₹${(calcValue * startPriceInr).toLocaleString(undefined, {maximumFractionDigits:2})}`;
-  const startUsd = `$${(calcValue * startPriceUsd).toLocaleString(undefined, {maximumFractionDigits:2})}`;
+  const startPriceUsd =
+    bnbInr && bnbUsd ? (startPriceInr / bnbInr) * bnbUsd : 0.01;
+  const launchPriceUsd =
+    bnbInr && bnbUsd ? (launchPriceInr / bnbInr) * bnbUsd : 0.17;
+  const startPriceBnb = bnbInr ? startPriceInr / bnbInr : 0.00001;
+  const launchPriceBnb = bnbInr ? launchPriceInr / bnbInr : 0.0003;
+  const startRs = `₹${(calcValue * startPriceInr).toLocaleString(undefined, {
+    maximumFractionDigits: 2,
+  })}`;
+  const startUsd = `$${(calcValue * startPriceUsd).toLocaleString(undefined, {
+    maximumFractionDigits: 2,
+  })}`;
   const startBnb = (calcValue * startPriceBnb).toFixed(5);
-  const launchRs = `₹${(calcValue * launchPriceInr).toLocaleString(undefined, {maximumFractionDigits:2})}`;
-  const launchUsd = `$${(calcValue * launchPriceUsd).toLocaleString(undefined, {maximumFractionDigits:2})}`;
+  const launchRs = `₹${(calcValue * launchPriceInr).toLocaleString(undefined, {
+    maximumFractionDigits: 2,
+  })}`;
+  const launchUsd = `$${(calcValue * launchPriceUsd).toLocaleString(
+    undefined,
+    { maximumFractionDigits: 2 }
+  )}`;
   const launchBnb = (calcValue * launchPriceBnb).toFixed(5);
+
+  // helper: forward ?ref= to /presale inside this app
+  function goToPresale() {
+    try {
+      const ref = localStorage.getItem("ra_ref");
+      const qs =
+        ref && /^0x[a-fA-F0-9]{40}$/.test(ref) ? `?ref=${ref}` : "";
+      window.location.href = "/presale" + qs;
+    } catch {
+      window.location.href = "/presale";
+    }
+  }
 
   return (
     <>
@@ -189,6 +223,7 @@ export default function WalletPage() {
           }
         `}
       </style>
+
       <div className="wallet-main-bg">
         <div
           className="wallet-headline"
@@ -199,17 +234,20 @@ export default function WalletPage() {
             fontSize: "1.18em",
             fontWeight: "bold",
             textTransform: "uppercase",
-            background: "linear-gradient(90deg,#fff 8%,#00b4fa 60%,#23e6ff 98%)",
+            background:
+              "linear-gradient(90deg,#fff 8%,#00b4fa 60%,#23e6ff 98%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
-            textShadow: "0 2px 18px #22213866,0 0 8px #00b4fa88,0 0 18px #00b4fa99",
+            textShadow:
+              "0 2px 18px #22213866,0 0 8px #00b4fa88,0 0 18px #00b4fa99",
             filter: "brightness(1.15) drop-shadow(0 0 3px #00e6ff99)",
             letterSpacing: "1.1px",
             minHeight: "1.7em",
           }}
           dangerouslySetInnerHTML={{ __html: walletHeadline }}
         />
+
         <div
           className="wallet-full-row"
           style={{
@@ -219,7 +257,7 @@ export default function WalletPage() {
             gap: 44,
             padding: "16px 0 0 0",
             maxWidth: 1250,
-            margin: "0 auto 48px auto",
+            margin: "0 auto 24px auto",
             flexWrap: "nowrap",
           }}
         >
@@ -242,6 +280,8 @@ export default function WalletPage() {
               transition: "transform .22s",
             }}
           />
+
+          {/* Wallet box */}
           <div
             className="wallet-container"
             style={{
@@ -268,11 +308,13 @@ export default function WalletPage() {
                 letterSpacing: "1.4px",
                 fontWeight: "bold",
                 marginBottom: 16,
-                background: "linear-gradient(90deg, #fff 8%, #00b4fa 60%, #23e6ff 98%)",
+                background:
+                  "linear-gradient(90deg, #fff 8%, #00b4fa 60%, #23e6ff 98%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
-                textShadow: "0 2px 18px #22213866, 0 0 8px #00b4fa88, 0 0 18px #00b4fa99",
+                textShadow:
+                  "0 2px 18px #22213866, 0 0 8px #00b4fa88, 0 0 18px #00b4fa99",
                 filter: "brightness(1.16) drop-shadow(0 0 3px #00e6ff99)",
                 textTransform: "uppercase",
                 textAlign: "center",
@@ -282,6 +324,7 @@ export default function WalletPage() {
             >
               <i className="fas fa-wallet"></i> WALLET OVERVIEW
             </div>
+
             {mounted && (
               <>
                 <button
@@ -301,10 +344,12 @@ export default function WalletPage() {
                 >
                   {isConnected ? "Connected" : "Connect Wallet"}
                 </button>
+
                 <button
                   style={{
                     padding: "13px 30px",
-                    background: "linear-gradient(90deg, #ffd200, #00ffc6)",
+                    background:
+                      "linear-gradient(90deg, #ffd200, #00ffc6)",
                     color: "#11131a",
                     border: "none",
                     borderRadius: "50px",
@@ -315,10 +360,11 @@ export default function WalletPage() {
                     marginTop: "5px",
                     width: "100%",
                   }}
-                  onClick={() => window.location.href = "/presale"}
+                  onClick={goToPresale}
                 >
                   <i className="fa-solid fa-bolt"></i> Buy RA Atum Token
                 </button>
+
                 <div
                   id="wallet-address"
                   className="wallet-address"
@@ -348,6 +394,7 @@ export default function WalletPage() {
                 </div>
               </>
             )}
+
             <div
               className="wallet-info-row"
               style={{
@@ -367,6 +414,7 @@ export default function WalletPage() {
                 {tokenBalance === "–" ? "–" : `${tokenBalance} RA Atum`}
               </span>
             </div>
+
             <div
               className="wallet-info-row"
               style={{
@@ -384,26 +432,9 @@ export default function WalletPage() {
               <span>Referral Earnings</span>
               <span id="referral-earnings">{referralEarnings}</span>
             </div>
-            {bnbUsd && bnbInr && (
-              <div
-                style={{
-                  marginTop: 8,
-                  fontSize: "0.97em",
-                  color: "#0fffc7",
-                  background: "#1f2430",
-                  padding: "6px 12px",
-                  borderRadius: "6px",
-                  border: "1px solid #00b4fa55",
-                  boxShadow: "0 0 10px #00b4fa22",
-                  width: "100%",
-                  textAlign: "center",
-                  letterSpacing: "1px",
-                }}
-              >
-                1 BNB = ₹{bnbInr.toLocaleString()} / ${bnbUsd.toFixed(2)}
-              </div>
-            )}
           </div>
+
+          {/* Calculator box */}
           <div
             className="wallet-calc-container"
             style={{
@@ -430,11 +461,13 @@ export default function WalletPage() {
                 fontSize: "1.13em",
                 fontWeight: "bold",
                 textTransform: "uppercase",
-                background: "linear-gradient(90deg, #fff 8%, #00b4fa 60%, #23e6ff 98%)",
+                background:
+                  "linear-gradient(90deg, #fff 8%, #00b4fa 60%, #23e6ff 98%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
-                textShadow: "0 2px 18px #22213866,0 0 8px #00b4fa88,0 0 18px #00b4fa99",
+                textShadow:
+                  "0 2px 18px #22213866,0 0 8px #00b4fa88,0 0 18px #00b4fa99",
                 filter: "brightness(1.15) drop-shadow(0 0 3px #00e6ff99)",
                 letterSpacing: "1.1px",
                 marginBottom: 16,
@@ -442,6 +475,7 @@ export default function WalletPage() {
             >
               CALCULATE THIS PROFIT
             </div>
+
             <div
               className="calc-row"
               style={{
@@ -471,7 +505,11 @@ export default function WalletPage() {
                 type="number"
                 min="0"
                 placeholder="100"
-                value={calcValue === 0 ? "" : calcValue.toString().replace(/^0+/, "")}
+                value={
+                  calcValue === 0
+                    ? ""
+                    : calcValue.toString().replace(/^0+/, "")
+                }
                 onChange={(e) => setCalcValue(Number(e.target.value))}
                 style={{
                   borderRadius: 6,
@@ -487,6 +525,7 @@ export default function WalletPage() {
                 }}
               />
             </div>
+
             <table
               className="calc-results-table"
               style={{
@@ -518,7 +557,7 @@ export default function WalletPage() {
                 </tr>
               </tbody>
             </table>
-            {/* --- ONLY SHOW THIS PRESALE SECTION BELOW --- */}
+
             <div
               style={{
                 fontSize: "1.08em",
@@ -530,16 +569,40 @@ export default function WalletPage() {
               }}
             >
               <div>
-                LIVE PRESALE PRICE:<br />
-                1 RA ATUM = ₹{livePresalePrice.inr ? livePresalePrice.inr.toFixed(4) : "--"} | ${livePresalePrice.usd ? livePresalePrice.usd.toFixed(4) : "--"} | BNB {livePresalePrice.bnb.toFixed(5)}
+                LIVE PRESALE PRICE:
+                <br />
+                1 RA ATUM = ₹
+                {livePresalePrice.inr
+                  ? livePresalePrice.inr.toFixed(4)
+                  : "--"}{" "}
+                | $
+                {livePresalePrice.usd
+                  ? livePresalePrice.usd.toFixed(4)
+                  : "--"}{" "}
+                | BNB {livePresalePrice.bnb.toFixed(5)}
               </div>
               <div style={{ fontSize: "0.95em", marginTop: 5 }}>
-                1000 RA ATUM = ₹{livePresalePrice.inr ? (livePresalePrice.inr * 1000).toFixed(2) : "--"} | ${livePresalePrice.usd ? (livePresalePrice.usd * 1000).toFixed(2) : "--"} | BNB {(livePresalePrice.bnb * 1000).toFixed(5)}
+                1000 RA ATUM = ₹
+                {livePresalePrice.inr
+                  ? (livePresalePrice.inr * 1000).toFixed(2)
+                  : "--"}{" "}
+                | $
+                {livePresalePrice.usd
+                  ? (livePresalePrice.usd * 1000).toFixed(2)
+                  : "--"}{" "}
+                | BNB {(livePresalePrice.bnb * 1000).toFixed(5)}
               </div>
             </div>
-            <div className="calc-footer-space" style={{ minHeight: 38 }}></div>
+
+            <div className="calc-footer-space" style={{ minHeight: 38 }} />
           </div>
         </div>
+
+        {/* ⬇️ Referral widget section */}
+        <div style={{ maxWidth: 600, width: "92%", margin: "0 auto 40px" }}>
+          <ReferralCard />
+        </div>
+
         <div
           className="bottom-back-home"
           style={{
