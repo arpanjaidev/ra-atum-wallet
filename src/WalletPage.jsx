@@ -4,7 +4,7 @@ import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount, useReadContract } from "wagmi";
 import { formatUnits } from "viem";
 
-// ⬇️ add this import
+// ⬇️ referral widget (self-contained component you added)
 import ReferralCard from "./components/ReferralCard";
 
 // Token setup
@@ -25,6 +25,9 @@ const tokenABI = [
     type: "function",
   },
 ];
+
+// API base (matches your server)
+const API = "https://api.raatumtoken.com";
 
 export default function WalletPage() {
   // For BNB Price
@@ -56,12 +59,14 @@ export default function WalletPage() {
   }, []);
   const { open } = useWeb3Modal();
   const { address, isConnected } = useAccount();
+
   const { data: decimals } = useReadContract({
     address: tokenAddress,
     abi: tokenABI,
     functionName: "decimals",
     chainId: 56,
   });
+
   const { data: rawBalance, isLoading: balanceLoading } = useReadContract({
     address: tokenAddress,
     abi: tokenABI,
@@ -69,6 +74,7 @@ export default function WalletPage() {
     args: address ? [address] : undefined,
     chainId: 56,
   });
+
   let tokenBalance = "–";
   if (isConnected) {
     if (balanceLoading || decimals === undefined) tokenBalance = "Fetching...";
@@ -80,7 +86,95 @@ export default function WalletPage() {
       });
     else tokenBalance = "0";
   }
-  const referralEarnings = isConnected ? "0.00" : "–"; // (ReferralCard shows real stats)
+
+  // ⬇️ Store ?ref= into cookie/localStorage (handles wallet page direct visits)
+  useEffect(() => {
+    try {
+      const url = new URL(window.location.href);
+      const ref = url.searchParams.get("ref");
+      if (ref && /^0x[a-fA-F0-9]{40}$/.test(ref)) {
+        document.cookie =
+          "ra_ref=" +
+          ref +
+          "; path=/; max-age=" +
+          60 * 60 * 24 * 30 +
+          "; domain=.raatumtoken.com; samesite=Lax";
+        try {
+          localStorage.setItem("ra_ref", ref);
+        } catch {}
+      }
+    } catch {}
+  }, []);
+
+  // ⬇️ Attach wallet to referrer when connected (uses cookie/LS or ?ref)
+  useEffect(() => {
+    if (!isConnected || !address) return;
+
+    let ref = null;
+    // 1) URL ?ref
+    try {
+      const url = new URL(window.location.href);
+      const qRef = url.searchParams.get("ref");
+      if (qRef && /^0x[a-fA-F0-9]{40}$/.test(qRef)) ref = qRef;
+    } catch {}
+
+    // 2) localStorage
+    if (!ref) {
+      try {
+        const lsRef = localStorage.getItem("ra_ref");
+        if (lsRef && /^0x[a-fA-F0-9]{40}$/.test(lsRef)) ref = lsRef;
+      } catch {}
+    }
+
+    // 3) cookie
+    if (!ref && document?.cookie) {
+      const m = document.cookie.match(/(?:^|;\s*)ra_ref=([^;]+)/);
+      if (m) {
+        const cRef = decodeURIComponent(m[1]);
+        if (/^0x[a-fA-F0-9]{40}$/.test(cRef)) ref = cRef;
+      }
+    }
+
+    if (!ref || !/^0x[a-fA-F0-9]{40}$/.test(ref)) return;
+
+    fetch(`${API}/api/ref/attach-wallet`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ wallet: address, ref }),
+      credentials: "include",
+    }).catch(() => {});
+  }, [isConnected, address]);
+
+  // ⬇️ Live referral stats (for "Referral Earnings" line)
+  const [stats, setStats] = useState(null);
+  useEffect(() => {
+    if (!isConnected || !address) {
+      setStats(null);
+      return;
+    }
+    (async () => {
+      try {
+        const r = await fetch(`${API}/api/ref/stats?wallet=${address}`, {
+          credentials: "include",
+        });
+        const j = await r.json();
+        setStats(j);
+      } catch (e) {
+        console.error("stats fetch failed", e);
+      }
+    })();
+  }, [isConnected, address]);
+
+  // Format pending RA using token decimals
+  let referralEarnings = isConnected ? "0.00 RA" : "–";
+  try {
+    if (isConnected && stats?.pendingRA && decimals !== undefined) {
+      const human = Number(
+        formatUnits(BigInt(stats.pendingRA), decimals)
+      ).toLocaleString(undefined, { maximumFractionDigits: 4 });
+      referralEarnings = `${human} RA`;
+    }
+  } catch {}
 
   // Typing Headline effect
   const [walletHeadline, setWalletHeadline] = useState("");
@@ -127,7 +221,7 @@ export default function WalletPage() {
     };
   }, []);
 
-  // Calculator logic (for profit estimation, you can keep if needed)
+  // Calculator logic (for profit estimation)
   const [calcValue, setCalcValue] = useState(100);
 
   // LIVE PRESALE PRICE (always matches the presale logic, 1000 RA = 0.01 BNB)
@@ -155,9 +249,10 @@ export default function WalletPage() {
     maximumFractionDigits: 2,
   })}`;
   const startBnb = (calcValue * startPriceBnb).toFixed(5);
-  const launchRs = `₹${(calcValue * launchPriceInr).toLocaleString(undefined, {
-    maximumFractionDigits: 2,
-  })}`;
+  const launchRs = `₹${(calcValue * launchPriceInr).toLocaleString(
+    undefined,
+    { maximumFractionDigits: 2 }
+  )}`;
   const launchUsd = `$${(calcValue * launchPriceUsd).toLocaleString(
     undefined,
     { maximumFractionDigits: 2 }
@@ -168,8 +263,7 @@ export default function WalletPage() {
   function goToPresale() {
     try {
       const ref = localStorage.getItem("ra_ref");
-      const qs =
-        ref && /^0x[a-fA-F0-9]{40}$/.test(ref) ? `?ref=${ref}` : "";
+      const qs = ref && /^0x[a-fA-F0-9]{40}$/.test(ref) ? `?ref=${ref}` : "";
       window.location.href = "/presale" + qs;
     } catch {
       window.location.href = "/presale";
@@ -348,8 +442,7 @@ export default function WalletPage() {
                 <button
                   style={{
                     padding: "13px 30px",
-                    background:
-                      "linear-gradient(90deg, #ffd200, #00ffc6)",
+                    background: "linear-gradient(90deg, #ffd200, #00ffc6)",
                     color: "#11131a",
                     border: "none",
                     borderRadius: "50px",
