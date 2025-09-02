@@ -1,34 +1,40 @@
 // src/components/ReferralCard.jsx
-import React, { useEffect, useMemo, useState } from "react";
-import { useAccount } from "wagmi";
-import { useReferral } from "../lib/useReferral";
-import { formatUnits } from "viem";
+import React, { useEffect, useMemo, useState } from 'react';
+import { useAccount } from 'wagmi';
+import { useReferral } from '../lib/useReferral';
+import { formatUnits } from 'viem';
 
-const API = import.meta.env.VITE_REF_API || "https://api.raatumtoken.com";
+const API = import.meta.env.VITE_REF_API || 'https://api.raatumtoken.com';
 
 export default function ReferralCard({ tokenDecimals = 18 }) {
   const { address, isConnected } = useAccount();
   const { getStoredRef } = useReferral();
+
   const [stats, setStats] = useState(null);
+  const [rules, setRules] = useState(null);
   const [copied, setCopied] = useState(false);
 
+  // Personal referral link
   const myLink = useMemo(() => {
-    if (!address) return "";
-    const base = window.location.origin;
+    if (!address) return '';
+    const base =
+      typeof window !== 'undefined'
+        ? window.location.origin
+        : 'https://ra-atum-wallet.vercel.app';
     return `${base}/?ref=${address}`;
   }, [address]);
 
-  // Attach wallet → referrer
+  // Attach wallet -> referrer (cookie/local ref or ?ref)
   useEffect(() => {
     if (!isConnected || !address) return;
     (async () => {
       try {
         const ref = getStoredRef();
         await fetch(`${API}/api/ref/attach-wallet`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ wallet: address, ref }),
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ wallet: address, ref })
         });
       } catch {}
     })();
@@ -40,7 +46,7 @@ export default function ReferralCard({ tokenDecimals = 18 }) {
     (async () => {
       try {
         const r = await fetch(`${API}/api/ref/stats?wallet=${address}`, {
-          credentials: "include",
+          credentials: 'include'
         });
         const j = await r.json();
         setStats(j);
@@ -48,163 +54,264 @@ export default function ReferralCard({ tokenDecimals = 18 }) {
     })();
   }, [address]);
 
-  const copy = async () => {
-    if (!myLink) return;
-    await navigator.clipboard.writeText(myLink);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1200);
-  };
+  // Load program rules (for min buy in BNB, etc.)
+  useEffect(() => {
+    (async () => {
+      try {
+        const r = await fetch(`${API}/api/ref/rules`, {
+          credentials: 'include'
+        });
+        const j = await r.json();
+        setRules(j);
+      } catch {}
+    })();
+  }, []);
 
-  // Human-readable pending RA
-  let pendingHuman = "0";
-  try {
-    if (stats?.pendingRA) {
-      pendingHuman = Number(
+  // Human formatted pending Ra Atum
+  const humanPending = useMemo(() => {
+    try {
+      if (!stats?.pendingRA) return '0.0000';
+      return Number(
         formatUnits(BigInt(stats.pendingRA), Number(tokenDecimals ?? 18))
       ).toLocaleString(undefined, { maximumFractionDigits: 4 });
+    } catch {
+      return '0.0000';
     }
-  } catch {}
+  }, [stats?.pendingRA, tokenDecimals]);
+
+  // Human formatted min BNB required for rewards (fallback 0.05)
+  const minBnbHuman = useMemo(() => {
+    try {
+      if (!rules?.minBnbWei) return '0.05';
+      return Number(formatUnits(BigInt(rules.minBnbWei), 18)).toLocaleString(
+        undefined,
+        { maximumFractionDigits: 3 }
+      );
+    } catch {
+      return '0.05';
+    }
+  }, [rules?.minBnbWei]);
+
+  const copy = async () => {
+    try {
+      if (!myLink) return;
+      await navigator.clipboard.writeText(myLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1200);
+    } catch {}
+  };
 
   if (!isConnected) return null;
 
   return (
     <>
+      {/* Mobile fix: stack tiles on small screens and keep heights tidy */}
       <style>
         {`
-          .ra-ref-card {
-            border: 1px solid #00b4fa55;
-            background: #192332e6;
-            box-shadow: 0 0 24px #00b4fa55;
-            border-radius: 16px;
-            padding: 16px;
-            color: #e7d7b6;
-          }
-          .ra-ref-title {
-            color: #00b4fa;
-            margin: 0 0 8px 0;
-            text-align: center;
-            font-size: 1.5rem;
-            text-shadow: 0 0 8px #00b4fa66, 0 0 16px #00b4fa55;
-          }
-          .ra-ref-sub {
-            margin: 0 0 14px 0;
-            text-align: center;
-            font-size: 1.05rem;
-          }
-          .ra-link-row {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            background: rgba(0,0,0,.35);
-            padding: 8px;
-            border-radius: 12px;
-            overflow: hidden;
-          }
-          .ra-link-code {
-            white-space: nowrap;
-            overflow-x: auto;
-            flex: 1;
-          }
-          .ra-copy-btn {
-            padding: 8px 14px;
-            border-radius: 10px;
-            border: 1px solid #00b4fa55;
-            background: transparent;
-            color: #e7d7b6;
-            font-weight: 700;
-          }
-          .ra-stat-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 12px;
-            margin-top: 16px;
-            width: 100%;
-          }
-          .ra-stat {
-            background: rgba(0,0,0,.25);
-            border: 1px solid #00b4fa33;
-            padding: 12px;
-            border-radius: 12px;
-            min-height: 96px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            overflow: hidden;
-            word-break: break-word;
-          }
-          .ra-stat .label {
-            opacity: .75;
-            font-family: 'Share Tech Mono', monospace;
-            letter-spacing: .4px;
-            margin-bottom: 4px;
-          }
-          .ra-stat .value {
-            font-size: 1.25rem;
-            font-weight: 700;
-          }
-          .ra-pending-amount {
-            font-size: 1.25rem;
-            font-weight: 800;
-            text-shadow: 0 0 8px #00ffd577, 0 0 14px #00b4fa55;
-            color: #00ffd5;
-          }
-          /* ✅ Mobile fix: stack stats in one column */
           @media (max-width: 470px) {
-            .ra-stat-grid { grid-template-columns: 1fr; }
-            .ra-ref-sub { font-size: 1rem; }
+            .ra-ref-grid { grid-template-columns: 1fr !important; }
+            .ra-ref-card { padding: 16px !important; }
+            .ra-ref-tile { min-height: 88px !important; }
           }
         `}
       </style>
 
-      <div className="ra-ref-card">
-        <h3 className="ra-ref-title">Referral Program</h3>
-        <p className="ra-ref-sub">
-          Earn <b>5%</b> in <b>Ra Atum</b> when friends buy. They get <b>2%</b> extra <b>Ra Atum</b>.
-        </p>
-
-        <div className="ra-link-row">
-          <code className="ra-link-code">{myLink}</code>
-          <button className="ra-copy-btn" onClick={copy}>
-            {copied ? "Copied!" : "Copy"}
-          </button>
+      <div
+        className="ra-ref-card"
+        style={{
+          border: '2px solid #00b4fa',
+          background: '#131622',
+          boxShadow: '0 8px 32px #00b4fa33',
+          borderRadius: 18,
+          padding: 22,
+          color: '#e9f6ff',
+          fontFamily: "'Share Tech Mono', monospace"
+        }}
+      >
+        {/* Shiny rule line */}
+        <div
+          style={{
+            textAlign: 'center',
+            fontWeight: 'bold',
+            marginBottom: 12,
+            fontSize: '0.98rem',
+            background:
+              'linear-gradient(90deg,#ffffff 10%,#00b4fa 55%,#23e6ff 95%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            textShadow:
+              '0 2px 18px #22213866,0 0 8px #00b4fa88,0 0 18px #00b4fa99',
+            letterSpacing: '0.6px'
+          }}
+        >
+          Rewards apply to buys ≥ {minBnbHuman} BNB.
         </div>
-
-        {stats && (
-          <div className="ra-stat-grid">
-            <div className="ra-stat">
-              <div className="label">Clicks</div>
-              <div className="value">{stats.clicks || 0}</div>
-            </div>
-
-            <div className="ra-stat">
-              <div className="label">Sign-ups</div>
-              <div className="value">{stats.attached || 0}</div>
-            </div>
-
-            <div className="ra-stat">
-              <div className="label">Purchases</div>
-              <div className="value">{stats.conversions || 0}</div>
-            </div>
-
-            <div className="ra-stat">
-              <div className="label">Your Ra Atum (pending)</div>
-              <div className="ra-pending-amount">{pendingHuman}</div>
-            </div>
-          </div>
-        )}
 
         <div
           style={{
-            textAlign: "center",
-            color: "#7fbbed",
-            marginTop: 12,
-            fontSize: "0.8rem",
-            opacity: 0.9,
+            textAlign: 'center',
+            fontWeight: 'bold',
+            marginBottom: 10,
+            fontSize: '1.1rem',
+            background:
+              'linear-gradient(90deg, #ffffff 10%, #00b4fa 55%, #23e6ff 95%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            textShadow:
+              '0 2px 18px #22213866, 0 0 8px #00b4fa88, 0 0 18px #00b4fa99',
+            letterSpacing: '0.6px'
           }}
         >
-          Note: big numbers in APIs are wei-style base units (1e18). We show human Ra Atum amounts here.
+          Referral Program
+        </div>
+
+        <div style={{ textAlign: 'center', marginBottom: 14, color: '#cfe9ff' }}>
+          Earn <b>5%</b> in <b>Ra Atum</b> when friends buy. They get <b>2%</b>{' '}
+          extra <b>Ra Atum</b>.
+        </div>
+
+        {/* Link row */}
+        <div
+          style={{
+            display: 'flex',
+            gap: 8,
+            alignItems: 'center',
+            margin: '0 auto 12px',
+            maxWidth: 820
+          }}
+        >
+          <input
+            readOnly
+            value={
+              isConnected
+                ? myLink
+                : 'Connect wallet to get your referral link'
+            }
+            onFocus={(e) => e.target.select()}
+            style={{
+              flex: 1,
+              background: '#0f1424',
+              border: '1.5px solid #1f3355',
+              color: '#aee6ff',
+              padding: '10px 12px',
+              borderRadius: 8,
+              fontFamily: "'Share Tech Mono', monospace",
+              outline: 'none'
+            }}
+          />
+          <button
+            disabled={!isConnected}
+            onClick={copy}
+            style={{
+              padding: '10px 14px',
+              borderRadius: 8,
+              border: '1.5px solid #00b4fa',
+              background: 'linear-gradient(90deg,#0fffc7,#00c3ff)',
+              color: '#0b0f17',
+              fontWeight: 'bold',
+              cursor: isConnected ? 'pointer' : 'not-allowed'
+            }}
+          >
+            {copied ? 'Copied!' : 'Copy'}
+          </button>
+        </div>
+
+        {/* Stats grid */}
+        <div
+          className="ra-ref-grid"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, minmax(160px, 1fr))',
+            gap: 14,
+            marginTop: 12
+          }}
+        >
+          <div
+            className="ra-ref-tile"
+            style={{
+              background: '#0f1424',
+              border: '1.5px solid #1f3355',
+              borderRadius: 12,
+              padding: '18px 14px',
+              textAlign: 'center'
+            }}
+          >
+            <div style={{ color: '#97c7ff', marginBottom: 6 }}>Clicks</div>
+            <div style={{ fontWeight: 'bold', color: '#ffffff' }}>
+              {stats?.clicks ?? 0}
+            </div>
+          </div>
+
+          <div
+            className="ra-ref-tile"
+            style={{
+              background: '#0f1424',
+              border: '1.5px solid #1f3355',
+              borderRadius: 12,
+              padding: '18px 14px',
+              textAlign: 'center'
+            }}
+          >
+            <div style={{ color: '#97c7ff', marginBottom: 6 }}>Sign-ups</div>
+            <div style={{ fontWeight: 'bold', color: '#ffffff' }}>
+              {stats?.attached ?? 0}
+            </div>
+          </div>
+
+          <div
+            className="ra-ref-tile"
+            style={{
+              background: '#0f1424',
+              border: '1.5px solid #1f3355',
+              borderRadius: 12,
+              padding: '18px 14px',
+              textAlign: 'center'
+            }}
+          >
+            <div style={{ color: '#97c7ff', marginBottom: 6 }}>Purchases</div>
+            <div style={{ fontWeight: 'bold', color: '#ffffff' }}>
+              {stats?.conversions ?? 0}
+            </div>
+          </div>
+
+          <div
+            className="ra-ref-tile"
+            style={{
+              background: '#0f1424',
+              border: '1.5px solid #1f3355',
+              borderRadius: 12,
+              padding: '18px 14px',
+              textAlign: 'center'
+            }}
+          >
+            <div style={{ color: '#97c7ff', marginBottom: 6 }}>
+              Your Ra Atum (pending)
+            </div>
+            <div
+              style={{
+                fontWeight: 'bold',
+                color: '#0fffc7',
+                textShadow:
+                  '0 2px 18px #22213866, 0 0 8px #00b4fa88, 0 0 18px #00b4fa99'
+              }}
+            >
+              {humanPending}
+            </div>
+          </div>
+        </div>
+
+        {/* Helpful note */}
+        <div
+          style={{
+            marginTop: 12,
+            textAlign: 'center',
+            fontSize: 12,
+            opacity: 0.8,
+            color: '#9fc7ff'
+          }}
+        >
+          Note: big numbers in APIs are wei-style base units (1e18). We show
+          human Ra Atum amounts here.
         </div>
       </div>
     </>
