@@ -700,9 +700,10 @@ export default function WalletPage() {
             }}
           >
             Rewards apply to buys ≥ 0.05 BNB.
-          </div>
+                 </div>
 
-          <ReferralCard />
+          {/* pass token decimals so pending RA shows human amount */}
+          <ReferralCard tokenDecimals={Number(decimals ?? 18)} />
 
           {/* tiny caption so nobody worries about raw 1e18 values */}
           <div
