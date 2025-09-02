@@ -4,7 +4,7 @@ import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount, useReadContract } from "wagmi";
 import { formatUnits } from "viem";
 
-// ⬇️ referral widget (self-contained component you added)
+// ⬇️ referral widget
 import ReferralCard from "./components/ReferralCard";
 
 // Token setup
@@ -30,7 +30,7 @@ const tokenABI = [
 const API = "https://api.raatumtoken.com";
 
 export default function WalletPage() {
-  // For BNB Price
+  // BNB price
   const [bnbUsd, setBnbUsd] = useState(null);
   const [bnbInr, setBnbInr] = useState(null);
 
@@ -52,11 +52,9 @@ export default function WalletPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Wallet states and logic
+  // Wallet state
   const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => setMounted(true), []);
   const { open } = useWeb3Modal();
   const { address, isConnected } = useAccount();
 
@@ -81,13 +79,11 @@ export default function WalletPage() {
     else if (rawBalance)
       tokenBalance = parseFloat(
         formatUnits(rawBalance, decimals)
-      ).toLocaleString(undefined, {
-        maximumFractionDigits: 4,
-      });
+      ).toLocaleString(undefined, { maximumFractionDigits: 4 });
     else tokenBalance = "0";
   }
 
-  // ⬇️ Store ?ref= into cookie/localStorage (handles wallet page direct visits)
+  // Save ?ref= into cookie + localStorage
   useEffect(() => {
     try {
       const url = new URL(window.location.href);
@@ -106,19 +102,17 @@ export default function WalletPage() {
     } catch {}
   }, []);
 
-  // ⬇️ Attach wallet to referrer when connected (uses cookie/LS or ?ref)
+  // Attach wallet to referrer once connected
   useEffect(() => {
     if (!isConnected || !address) return;
 
     let ref = null;
-    // 1) URL ?ref
     try {
       const url = new URL(window.location.href);
       const qRef = url.searchParams.get("ref");
       if (qRef && /^0x[a-fA-F0-9]{40}$/.test(qRef)) ref = qRef;
     } catch {}
 
-    // 2) localStorage
     if (!ref) {
       try {
         const lsRef = localStorage.getItem("ra_ref");
@@ -126,7 +120,6 @@ export default function WalletPage() {
       } catch {}
     }
 
-    // 3) cookie
     if (!ref && document?.cookie) {
       const m = document.cookie.match(/(?:^|;\s*)ra_ref=([^;]+)/);
       if (m) {
@@ -145,7 +138,7 @@ export default function WalletPage() {
     }).catch(() => {});
   }, [isConnected, address]);
 
-  // ⬇️ Live referral stats (for "Referral Earnings" line)
+  // Live referral stats (to show pending earnings in header box)
   const [stats, setStats] = useState(null);
   useEffect(() => {
     if (!isConnected || !address) {
@@ -166,20 +159,20 @@ export default function WalletPage() {
   }, [isConnected, address]);
 
   // Format pending RA using token decimals
-  let referralEarnings = isConnected ? "0.00 RA" : "–";
+  let referralEarnings = isConnected ? "0.00 Ra Atum" : "–";
   try {
     if (isConnected && stats?.pendingRA && decimals !== undefined) {
       const human = Number(
         formatUnits(BigInt(stats.pendingRA), decimals)
       ).toLocaleString(undefined, { maximumFractionDigits: 4 });
-      referralEarnings = `${human} RA`;
+      referralEarnings = `${human} Ra Atum`;
     }
   } catch {}
 
-  // Typing Headline effect
+  // Typing headline
   const [walletHeadline, setWalletHeadline] = useState("");
   const walletTypingText =
-    "JOIN RA ATUM TO SHAPE THE FUTURE OF BLOCKCHAIN-POWERED KINDNESS.";
+    "JOIN Ra Atum TO SHAPE THE FUTURE OF BLOCKCHAIN-POWERED KINDNESS.";
   useEffect(() => {
     let wIndex = 0,
       wTypingForward = true,
@@ -211,7 +204,7 @@ export default function WalletPage() {
         }
       }
     }
-    let blinkInt = setInterval(() => {
+    const blinkInt = setInterval(() => {
       wBlinkOn = !wBlinkOn;
     }, 410);
     typeWalletLine();
@@ -221,10 +214,10 @@ export default function WalletPage() {
     };
   }, []);
 
-  // Calculator logic (for profit estimation)
+  // Calculator logic
   const [calcValue, setCalcValue] = useState(100);
 
-  // LIVE PRESALE PRICE (always matches the presale logic, 1000 RA = 0.01 BNB)
+  // Live presale price (1000 Ra Atum = 0.01 BNB)
   const presaleRate = 1000;
   const presaleBnbPerRa = 0.01 / presaleRate; // 0.00001
   const livePresalePrice = {
@@ -233,7 +226,7 @@ export default function WalletPage() {
     usd: bnbUsd ? presaleBnbPerRa * bnbUsd : 0,
   };
 
-  // Starting and launch prices per RA
+  // Starting & launch prices per Ra Atum
   const startPriceInr = 0.55;
   const launchPriceInr = 15;
   const startPriceUsd =
@@ -249,17 +242,16 @@ export default function WalletPage() {
     maximumFractionDigits: 2,
   })}`;
   const startBnb = (calcValue * startPriceBnb).toFixed(5);
-  const launchRs = `₹${(calcValue * launchPriceInr).toLocaleString(
-    undefined,
-    { maximumFractionDigits: 2 }
-  )}`;
+  const launchRs = `₹${(calcValue * launchPriceInr).toLocaleString(undefined, {
+    maximumFractionDigits: 2,
+  })}`;
   const launchUsd = `$${(calcValue * launchPriceUsd).toLocaleString(
     undefined,
     { maximumFractionDigits: 2 }
   )}`;
   const launchBnb = (calcValue * launchPriceBnb).toFixed(5);
 
-  // helper: forward ?ref= to /presale inside this app
+  // helper: forward ?ref= to /presale
   function goToPresale() {
     try {
       const ref = localStorage.getItem("ra_ref");
@@ -357,7 +349,7 @@ export default function WalletPage() {
         >
           <img
             src="/RA-ATUM-LOGO.png"
-            alt="RA Atum Logo"
+            alt="Ra Atum Logo"
             className="ra-logo-big"
             style={{
               width: 170,
@@ -455,7 +447,7 @@ export default function WalletPage() {
                   }}
                   onClick={goToPresale}
                 >
-                  <i className="fa-solid fa-bolt"></i> Buy RA Atum Token
+                  <i className="fa-solid fa-bolt"></i> Buy Ra Atum Token
                 </button>
 
                 <div
@@ -504,7 +496,7 @@ export default function WalletPage() {
             >
               <span>Token Balance</span>
               <span id="token-balance">
-                {tokenBalance === "–" ? "–" : `${tokenBalance} RA Atum`}
+                {tokenBalance === "–" ? "–" : `${tokenBalance} Ra Atum`}
               </span>
             </div>
 
@@ -586,11 +578,11 @@ export default function WalletPage() {
                   fontSize: "1em",
                   fontWeight: "bold",
                   letterSpacing: ".3px",
-                  minWidth: 70,
+                  minWidth: 96,
                   textAlign: "right",
                 }}
               >
-                Enter RA ATUM
+                Enter Ra Atum
               </label>
               <input
                 id="calc-ra"
@@ -599,9 +591,7 @@ export default function WalletPage() {
                 min="0"
                 placeholder="100"
                 value={
-                  calcValue === 0
-                    ? ""
-                    : calcValue.toString().replace(/^0+/, "")
+                  calcValue === 0 ? "" : calcValue.toString().replace(/^0+/, "")
                 }
                 onChange={(e) => setCalcValue(Number(e.target.value))}
                 style={{
@@ -664,7 +654,7 @@ export default function WalletPage() {
               <div>
                 LIVE PRESALE PRICE:
                 <br />
-                1 RA ATUM = ₹
+                1 Ra Atum = ₹
                 {livePresalePrice.inr
                   ? livePresalePrice.inr.toFixed(4)
                   : "--"}{" "}
@@ -675,7 +665,7 @@ export default function WalletPage() {
                 | BNB {livePresalePrice.bnb.toFixed(5)}
               </div>
               <div style={{ fontSize: "0.95em", marginTop: 5 }}>
-                1000 RA ATUM = ₹
+                1000 Ra Atum = ₹
                 {livePresalePrice.inr
                   ? (livePresalePrice.inr * 1000).toFixed(2)
                   : "--"}{" "}
@@ -691,9 +681,42 @@ export default function WalletPage() {
           </div>
         </div>
 
-        {/* ⬇️ Referral widget section */}
-        <div style={{ maxWidth: 600, width: "92%", margin: "0 auto 40px" }}>
+        {/* Referral widget section */}
+        <div style={{ maxWidth: 640, width: "92%", margin: "0 auto 32px" }}>
+          {/* shiny rule notice */}
+          <div
+            style={{
+              textAlign: "center",
+              fontWeight: "bold",
+              marginBottom: 10,
+              fontSize: "0.98rem",
+              background:
+                "linear-gradient(90deg, #ffffff 10%, #00b4fa 55%, #23e6ff 95%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              textShadow:
+                "0 2px 18px #22213866, 0 0 8px #00b4fa88, 0 0 18px #00b4fa99",
+              letterSpacing: "0.6px",
+            }}
+          >
+            Rewards apply to buys ≥ 0.05 BNB.
+          </div>
+
           <ReferralCard />
+
+          {/* tiny caption so nobody worries about raw 1e18 values */}
+          <div
+            style={{
+              textAlign: "center",
+              color: "#7fbbed",
+              marginTop: 8,
+              fontSize: "0.8rem",
+              opacity: 0.9,
+            }}
+          >
+            Note: big numbers in APIs are wei-style base units (1e18). We show human
+            Ra Atum amounts here.
+          </div>
         </div>
 
         <div
