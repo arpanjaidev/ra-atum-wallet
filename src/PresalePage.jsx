@@ -1,26 +1,27 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
-import { useAccount, useBalance, useSendTransaction } from "wagmi";
+import { useAccount, useBalance, useSendTransaction, useSwitchChain } from "wagmi";
 import { bsc } from "wagmi/chains";
 import { parseEther } from "viem";
 import { FaRegCopy } from "react-icons/fa6";
 
 const presaleAddress = "0x0424d65Ef97A6cCd269c39c2b8A3c1c31cBb7416";
-const tokenAddress = "0xcE06aDbB070c2f0d90Ba109E77c0c2Ff83F9Ff3A";
+const tokenAddress   = "0xcE06aDbB070c2f0d90Ba109E77c0c2Ff83F9Ff3A";
 const bscScanPresale = "https://bscscan.com/address/0x0424d65Ef97A6cCd269c39c2b8A3c1c31cBb7416";
-const tokenSupply = "21,000,000 (Million) RA ATUM";
+const tokenSupply    = "21,000,000 (Million) RA ATUM";
+
 const minBNB = 0.01;
 const maxBNB = 2;
-const rate = 100000; // <-- UPDATE this to match your contract (see previous explanation!)
+const rate   = 100000; // tokens per BNB
 
 const presaleStart = 1750178782 * 1000;
-const presaleEnd = 1765730782 * 1000;
+const presaleEnd   = 1765730782 * 1000;
 
-// Prices as numbers for dynamic BNB calculation
-const startRs = 0.55;
+// Prices for info pills
+const startRs  = 0.55;
 const startUsd = 0.01;
 const launchRs = 15;
-const launchUsd = 0.17;
+const launchUsd= 0.17;
 
 function copyToClipboard(text, setCopied) {
   navigator.clipboard.writeText(text).then(() => {
@@ -33,10 +34,15 @@ export default function PresalePage() {
   const { open } = useWeb3Modal();
   const { address, isConnected, chainId } = useAccount();
   const { data: bnbBal } = useBalance({ address, chainId: bsc.id });
+
+  // 🔄 chain switch hook
+  const { switchChain, isPending: switching } = useSwitchChain();
+
+  // Buy input & UI states
   const [bnb, setBnb] = useState("");
   const [copied, setCopied] = useState(false);
 
-  // LIVE BNB PRICE (CoinGecko)
+  // Live BNB price
   const [bnbUsd, setBnbUsd] = useState(null);
   const [bnbInr, setBnbInr] = useState(null);
 
@@ -47,9 +53,9 @@ export default function PresalePage() {
           "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd,inr"
         );
         const data = await res.json();
-        setBnbUsd(data.binancecoin.usd);
-        setBnbInr(data.binancecoin.inr);
-      } catch (err) {}
+        setBnbUsd(data?.binancecoin?.usd);
+        setBnbInr(data?.binancecoin?.inr);
+      } catch {}
     }
     fetchBNBPrice();
     const interval = setInterval(fetchBNBPrice, 30000);
@@ -60,11 +66,9 @@ export default function PresalePage() {
   const now = Date.now();
   const live = now > presaleStart && now < presaleEnd;
   const time =
-    now < presaleStart
-      ? presaleStart - now
-      : now < presaleEnd
-      ? presaleEnd - now
-      : 0;
+    now < presaleStart ? presaleStart - now :
+    now < presaleEnd   ? presaleEnd - now   : 0;
+
   function formatTimer(ms) {
     if (ms <= 0) return "Ended";
     let sec = Math.floor(ms / 1000);
@@ -78,23 +82,18 @@ export default function PresalePage() {
   const [timerStr, setTimerStr] = useState(formatTimer(time));
   useEffect(() => {
     const id = setInterval(() => {
-      const ms = (() => {
-        const now2 = Date.now();
-        return now2 < presaleStart
-          ? presaleStart - now2
-          : now2 < presaleEnd
-          ? presaleEnd - now2
-          : 0;
-      })();
+      const now2 = Date.now();
+      const ms =
+        now2 < presaleStart ? presaleStart - now2 :
+        now2 < presaleEnd   ? presaleEnd - now2   : 0;
       setTimerStr(formatTimer(ms));
     }, 1000);
     return () => clearInterval(id);
   }, []);
 
-  // Animated Image (slide-in right on scroll down)
+  // Animated image
   const imageRef = useRef(null);
   const [imgVisible, setImgVisible] = useState(false);
-
   useEffect(() => {
     function onScroll() {
       if (!imageRef.current) return;
@@ -107,10 +106,10 @@ export default function PresalePage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Calculate RA amount
+  // Tokens preview
   const raAtumGet = bnb && parseFloat(bnb) > 0 ? (bnb * rate).toLocaleString() : "";
 
-  // Transaction logic with wagmi
+  // Tx logic
   const {
     data: txData,
     sendTransaction,
@@ -119,11 +118,10 @@ export default function PresalePage() {
     error: txError,
   } = useSendTransaction();
 
-  // Helper for error and confirm messages
   const [buyError, setBuyError] = useState("");
   const [buySuccess, setBuySuccess] = useState("");
 
-  // GIFT MODAL STATES
+  // Gift modal
   const [showGift, setShowGift] = useState(false);
   const [pendingBuy, setPendingBuy] = useState(false);
 
@@ -132,10 +130,38 @@ export default function PresalePage() {
     setBuySuccess("");
   }, [bnb]);
 
-  // Now, Buy only called after modal is closed
+  // 🔧 force BSC switch / add
+  async function forceBsc() {
+    try {
+      await switchChain({ chainId: bsc.id });
+    } catch (e) {
+      try {
+        await window?.ethereum?.request({
+          method: "wallet_addEthereumChain",
+          params: [{
+            chainId: "0x38",
+            chainName: "BNB Smart Chain",
+            rpcUrls: ["https://bsc-dataseed.binance.org/"],
+            nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
+            blockExplorerUrls: ["https://bscscan.com"]
+          }]
+        });
+      } catch {}
+    }
+  }
+
+  // 🤖 auto-switch after connect if wrong chain
+  useEffect(() => {
+    if (isConnected && chainId && chainId !== bsc.id) {
+      forceBsc();
+    }
+  }, [isConnected, chainId]);
+
+  // Buy flow (runs after closing gift modal)
   async function handleBuy() {
     setBuyError("");
     setBuySuccess("");
+
     if (!isConnected) {
       open();
       return;
@@ -240,6 +266,7 @@ export default function PresalePage() {
           LIVE • {timerStr}
         </div>
       </div>
+
       {/* --- Main Content --- */}
       <div
         style={{
@@ -284,6 +311,7 @@ export default function PresalePage() {
           >
             RA ATUM TOKEN PRE-SALE
           </div>
+
           <div
             style={{
               display: "flex",
@@ -389,6 +417,7 @@ export default function PresalePage() {
               {tokenSupply}
             </span>
           </div>
+
           {/* --- Presale Price Info Bar --- */}
           <div
             style={{
@@ -459,6 +488,7 @@ export default function PresalePage() {
               }}
             />
           </div>
+
           {/* Main neon card */}
           <div
             style={{
@@ -492,22 +522,16 @@ export default function PresalePage() {
             >
               {live ? (
                 <span>
-                  <span style={{ color: "#00e6ff", fontWeight: 900 }}>
-                    LIVE
-                  </span>
-                  <span style={{ color: "#00e6ff" }}>
-                    {" "}
-                    • {timerStr}
-                  </span>
+                  <span style={{ color: "#00e6ff", fontWeight: 900 }}>LIVE</span>
+                  <span style={{ color: "#00e6ff" }}> • {timerStr}</span>
                 </span>
               ) : now < presaleStart ? (
-                <span style={{ color: "#00e6ff" }}>
-                  Starts in: {timerStr}
-                </span>
+                <span style={{ color: "#00e6ff" }}>Starts in: {timerStr}</span>
               ) : (
                 <span style={{ color: "#d72a2a" }}>Presale Ended</span>
               )}
             </div>
+
             <div
               style={{
                 margin: "0 0 13px 0",
@@ -522,12 +546,11 @@ export default function PresalePage() {
                   {bnbBal ? Number(bnbBal.formatted).toFixed(5) : "0.00000"}
                 </span>
               ) : (
-                <span style={{ color: "#00e6ff" }}>
-                  Please connect wallet to buy!
-                </span>
+                <span style={{ color: "#00e6ff" }}>Please connect wallet to buy!</span>
               )}
             </div>
-            {/* --- LIVE BNB PRICE --- */}
+
+            {/* Live BNB price */}
             {bnbUsd && bnbInr && (
               <div
                 style={{
@@ -547,12 +570,38 @@ export default function PresalePage() {
               </div>
             )}
 
-            <div
-              style={{
-                margin: "0 auto 8px auto",
-                padding: "13px 0 0 0",
-              }}
-            >
+            {/* 🔔 Wrong network helper */}
+            {isConnected && chainId !== bsc.id && (
+              <div style={{ margin: "6px 0 12px 0" }}>
+                <div
+                  style={{
+                    color: "#ffd29a",
+                    fontWeight: "bold",
+                    marginBottom: 8,
+                    letterSpacing: ".4px",
+                  }}
+                >
+                  You’re on the wrong network. Switch to <b>BSC</b> to continue.
+                </div>
+                <button
+                  onClick={forceBsc}
+                  disabled={switching}
+                  style={{
+                    background: "linear-gradient(90deg,#ffd200,#00ffc6)",
+                    color: "#11131a",
+                    border: "none",
+                    borderRadius: 12,
+                    padding: "10px 16px",
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                  }}
+                >
+                  {switching ? "Switching…" : "Switch to BSC"}
+                </button>
+              </div>
+            )}
+
+            <div style={{ margin: "0 auto 8px auto", padding: "13px 0 0 0" }}>
               <div
                 style={{
                   fontWeight: "bold",
@@ -574,6 +623,30 @@ export default function PresalePage() {
               >
                 Min: 0.01 BNB | Max: 2 BNB per wallet
               </div>
+
+              {/* Connect Wallet button (visible when not connected) */}
+              {!isConnected && (
+                <button
+                  onClick={open}
+                  style={{
+                    background: "linear-gradient(90deg,#00e6ff 0%,#00b4fa 100%)",
+                    color: "#fff",
+                    fontWeight: "bold",
+                    padding: "10px 18px",
+                    borderRadius: 14,
+                    border: "none",
+                    fontSize: "1.02em",
+                    cursor: "pointer",
+                    marginBottom: 12,
+                    boxShadow: "0 2px 14px #00e6ff11",
+                    letterSpacing: ".6px",
+                    textShadow: "0 0 8px #00e6ff, 0 0 10px #fff",
+                  }}
+                >
+                  Connect Wallet
+                </button>
+              )}
+
               <div
                 style={{
                   display: "flex",
@@ -602,7 +675,7 @@ export default function PresalePage() {
                   max={maxBNB}
                   step="0.01"
                   value={bnb}
-                  onChange={e => {
+                  onChange={(e) => {
                     let val = e.target.value;
                     if (Number(val) > maxBNB) val = maxBNB.toString();
                     setBnb(val);
@@ -611,12 +684,14 @@ export default function PresalePage() {
                 />
                 <span style={{ fontWeight: 700, color: "#00e6ff" }}>BNB</span>
               </div>
-              {/* Show conversion value */}
+
+              {/* Conversion */}
               {bnbUsd && bnbInr && bnb && Number(bnb) > 0 && (
                 <div style={{ fontSize: "0.97em", color: "#ffed8b", marginTop: 2, marginBottom: 8 }}>
                   ≈ ₹{(Number(bnb) * bnbInr).toLocaleString()} / ${ (Number(bnb) * bnbUsd).toFixed(2) }
                 </div>
               )}
+
               <div
                 style={{
                   fontSize: ".91em",
@@ -635,7 +710,8 @@ export default function PresalePage() {
                   ""
                 )}
               </div>
-              {/* Buy Button updated: show modal BEFORE transaction */}
+
+              {/* Buy Button opens gift modal first */}
               <button
                 style={{
                   background: "linear-gradient(90deg,#00e6ff 0%,#00b4fa 100%)",
@@ -666,12 +742,9 @@ export default function PresalePage() {
                   setPendingBuy(true);
                 }}
               >
-                {isTxLoading
-                  ? "Processing..."
-                  : isConnected
-                  ? "Buy Now"
-                  : "Connect Wallet"}
+                {isTxLoading ? "Processing..." : "Buy Now"}
               </button>
+
               {buyError && (
                 <div style={{ color: "#d72a2a", marginTop: 6, fontWeight: "bold" }}>
                   {buyError}
@@ -696,6 +769,7 @@ export default function PresalePage() {
               )}
             </div>
           </div>
+
           <div
             style={{
               fontSize: "1.01em",
@@ -710,6 +784,7 @@ export default function PresalePage() {
           </div>
         </div>
       </div>
+
       {/* OUTSIDE: Back to Home */}
       <div
         style={{
@@ -820,7 +895,7 @@ export default function PresalePage() {
         </div>
       )}
 
-      {/* Animation Keyframes and MOBILE FIX */}
+      {/* Animations & mobile tweaks */}
       <style>{`
         @keyframes blink {
           0% { filter: brightness(1.14) drop-shadow(0 0 7px #00e6ff77); }
@@ -838,7 +913,6 @@ export default function PresalePage() {
           overflow-x: hidden !important;
           background: transparent !important;
         }
-        /* --- MOBILE FIX --- */
         @media (max-width: 600px) {
           .ra-logo-mobile-fix {
             position: relative !important;
