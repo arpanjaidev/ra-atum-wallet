@@ -1,6 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
-import { useAccount, useBalance, useSendTransaction, useSwitchChain } from "wagmi";
+import {
+  useAccount,
+  useBalance,
+  useWriteContract,
+  useSwitchChain,
+} from "wagmi";
 import { bsc } from "wagmi/chains";
 import { parseEther } from "viem";
 import { FaRegCopy } from "react-icons/fa6";
@@ -23,6 +28,11 @@ const startUsd = 0.01;
 const launchRs = 15;
 const launchUsd= 0.17;
 
+// ✅ Presale ABI: payable buy() (change if your function differs)
+const presaleABI = [
+  { inputs: [], name: "buy", outputs: [], stateMutability: "payable", type: "function" }
+];
+
 function copyToClipboard(text, setCopied) {
   navigator.clipboard.writeText(text).then(() => {
     setCopied(true);
@@ -37,6 +47,15 @@ export default function PresalePage() {
 
   // 🔄 chain switch hook
   const { switchChain, isPending: switching } = useSwitchChain();
+
+  // Tx writer (contract call)
+  const {
+    data: txData,              // hash (string) in most wagmi versions
+    writeContract,
+    isPending: isTxLoading,
+    isSuccess: isTxSuccess,
+    error: txError,
+  } = useWriteContract();
 
   // Buy input & UI states
   const [bnb, setBnb] = useState("");
@@ -109,15 +128,6 @@ export default function PresalePage() {
   // Tokens preview
   const raAtumGet = bnb && parseFloat(bnb) > 0 ? (bnb * rate).toLocaleString() : "";
 
-  // Tx logic
-  const {
-    data: txData,
-    sendTransaction,
-    isLoading: isTxLoading,
-    isSuccess: isTxSuccess,
-    error: txError,
-  } = useSendTransaction();
-
   const [buyError, setBuyError] = useState("");
   const [buySuccess, setBuySuccess] = useState("");
 
@@ -179,11 +189,15 @@ export default function PresalePage() {
       setBuyError(`Max buy per wallet is ${maxBNB} BNB`);
       return;
     }
+
     try {
-      await sendTransaction({
-        to: presaleAddress,
+      await writeContract({
+        address: presaleAddress,
+        abi: presaleABI,
+        functionName: "buy",
         value: parseEther(bnb),
       });
+      // Success will set via isTxSuccess effect below
     } catch (e) {
       setBuyError("Transaction failed or was rejected.");
     }
@@ -194,6 +208,9 @@ export default function PresalePage() {
       setBuySuccess("Success! BNB sent. You will receive RA ATUM soon.");
     }
   }, [isTxSuccess]);
+
+  // Extract tx hash for link (wagmi versions differ)
+  const txHash = typeof txData === "string" ? txData : txData?.hash;
 
   return (
     <div
@@ -755,10 +772,10 @@ export default function PresalePage() {
                   {buySuccess}
                 </div>
               )}
-              {isTxSuccess && txData && (
+              {isTxSuccess && txHash && (
                 <div style={{ marginTop: 8 }}>
                   <a
-                    href={`https://bscscan.com/tx/${txData.hash}`}
+                    href={`https://bscscan.com/tx/${txHash}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ color: "#00e6ff", fontWeight: "bold" }}
