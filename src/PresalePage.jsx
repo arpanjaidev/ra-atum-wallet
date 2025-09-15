@@ -311,23 +311,22 @@ export default function PresalePage() {
           }}
         >
           <div
-            style={{
-              fontSize: "2.35em",
-              fontWeight: 900,
-              marginBottom: 11,
-              marginTop: 0,
-              letterSpacing: 2,
-              textAlign: "center",
-              color: "#00e6ff",
-              filter: "brightness(1.05) drop-shadow(0 0 13px #00e6ff66)",
-              textShadow: "0 2px 16px #00e6ff55",
-              textTransform: "uppercase",
-              animation: "blink 1.1s step-end infinite alternate",
-              letterSpacing: "1.7px",
-            }}
-          >
-            RA ATUM TOKEN PRE-SALE
-          </div>
+  style={{
+    fontSize: "2.35em",
+    fontWeight: 900,
+    marginBottom: 11,
+    marginTop: 0,
+    letterSpacing: "1.7px",   // ← only once
+    textAlign: "center",
+    color: "#00e6ff",
+    filter: "brightness(1.05) drop-shadow(0 0 13px #00e6ff66)",
+    textShadow: "0 2px 16px #00e6ff55",
+    textTransform: "uppercase",
+    animation: "blink 1.1s step-end infinite alternate"
+  }}
+>
+  RA ATUM TOKEN PRE-SALE
+</div>
 
           <div
             style={{
